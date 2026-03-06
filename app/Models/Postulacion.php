@@ -19,15 +19,16 @@ class Postulacion extends Model
         'curriculum_vitae',
         'carta_motivos',
         'cumplimiento_normatividad',
-        'acta_constitutiva',
     ];
 
     protected $fillable = [
         'nombre',
         'apellidos',
+        'correo',
         'consejo_id',
         'puesto',
         //'documento',
+        'acta_resolucion',
         'estatus',
         'validado_por',
         'fecha_validacion',
@@ -36,6 +37,7 @@ class Postulacion extends Model
     
     protected $casts = [
         'fecha_validacion' => 'datetime',
+        'fecha_postulacion' => 'datetime',
     ];
 
     //relaciones

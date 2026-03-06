@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { ref, watchEffect } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
+import { CheckBadgeIcon, XMarkIcon } from '@heroicons/vue/24/solid'
 
 const page = usePage()
 
@@ -10,35 +11,8 @@ const props = defineProps({
   postulaciones: { type: Array, default: () => [] }
 })
 
-const showExpediente = ref(false)
-const selected = ref(null)
-
-const abrirExpediente = (p) => {
-  selected.value = p
-  showExpediente.value = true
-}
-
-const cerrarExpediente = () => {
-  selected.value = null
-  showExpediente.value = false
-}
-
-const estatusClass = (estatus) => {
-  if (estatus === 'pendiente') return 'bg-yellow-100 text-yellow-800'
-  if (estatus === 'aprobada') return 'bg-green-100 text-green-800'
-  if (estatus === 'no_aprobada') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
-}
-
-const estatusLabel = (estatus) => {
-  if (estatus === 'pendiente') return 'Pendiente'
-  if (estatus === 'aprobada') return 'Aprobada'
-  if (estatus === 'no_aprobada') return 'No Aprobada'
-  return 'Desconocido'
-}
-
-/* Flash messages */
 watchEffect(() => {
+
   if (page.props.flash?.success) {
     Swal.fire({
       icon: 'success',
@@ -46,6 +20,7 @@ watchEffect(() => {
       text: page.props.flash.success
     })
   }
+
   if (page.props.flash?.error) {
     Swal.fire({
       icon: 'error',
@@ -53,57 +28,106 @@ watchEffect(() => {
       text: page.props.flash.error
     })
   }
+
 })
 
 const aprobar = (id) => {
+
   Swal.fire({
-    title: 'Fecha resolutiva',
-    input: 'date',
-    inputLabel: 'Capture la fecha de resolución',
-    inputValidator: (value) => {
-      if (!value) return 'Debe capturar la fecha'
-    },
+    title: 'Resolución de postulación',
+    html: `
+      <input type="date" id="fecha" class="swal2-input">
+      <input type="file" id="acta" class="swal2-file" accept="application/pdf">
+    `,
     showCancelButton: true,
-    confirmButtonText: 'Aprobar'
+    confirmButtonText: 'Aprobar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#16a34a',
+    cancelButtonColor: '#6b7280',
+
+    preConfirm: () => {
+
+      const fecha = document.getElementById('fecha').value
+      const archivo = document.getElementById('acta').files[0]
+
+      if (!fecha || !archivo) {
+        Swal.showValidationMessage('Debe capturar fecha y subir el acta')
+      }
+
+      return { fecha, archivo }
+
+    }
+
   }).then(result => {
+
     if (!result.isConfirmed) return
 
-    router.patch(
-      route('postulaciones.aprobar', id),
-      { fecha_validacion: result.value }
-    )
+    const formData = new FormData()
+
+    formData.append('fecha_validacion', result.value.fecha)
+    formData.append('acta_resolucion', result.value.archivo)
+
+    router.post(route('postulaciones.aprobar', id), formData)
+
   })
+
 }
 
 const rechazar = (id) => {
+
   Swal.fire({
-    title: 'Fecha resolutiva',
-    input: 'date',
-    inputLabel: 'Seleccione la fecha de resolución',
-    inputValidator: (value) => {
-      if (!value) return 'Debe capturar la fecha'
-    },
+    title: 'Resolución de postulación',
+    html: `
+      <input type="date" id="fecha" class="swal2-input">
+      <input type="file" id="acta" class="swal2-file" accept="application/pdf">
+    `,
     showCancelButton: true,
-    confirmButtonText: 'Rechazar'
+    confirmButtonText: 'Rechazar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+
+    preConfirm: () => {
+
+      const fecha = document.getElementById('fecha').value
+      const archivo = document.getElementById('acta').files[0]
+
+      if (!fecha || !archivo) {
+        Swal.showValidationMessage('Debe capturar fecha y subir el acta')
+      }
+
+      return { fecha, archivo }
+
+    }
+
   }).then(result => {
+
     if (!result.isConfirmed) return
 
-    router.patch(
-      route('postulaciones.rechazar', id),
-      { fecha_validacion: result.value }
-    )
+    const formData = new FormData()
+
+    formData.append('fecha_validacion', result.value.fecha)
+    formData.append('acta_resolucion', result.value.archivo)
+
+    router.post(route('postulaciones.rechazar', id), formData)
+
   })
+
 }
 </script>
 
 <template>
+
   <AuthenticatedLayout>
 
     <template #header>
-      <h2 class="text-xl font-semibold">Panel de Validación</h2>
+      <h2 class="text-xl font-semibold">
+        Panel de Validación
+      </h2>
     </template>
 
     <div class="py-12">
+
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
         <div v-if="!postulaciones.length" class="text-gray-500">
@@ -118,9 +142,7 @@ const rechazar = (id) => {
               <tr>
                 <th class="px-4 py-2 text-left">Nombre</th>
                 <th class="px-4 py-2 text-left">Consejo</th>
-                <th class="px-4 py-2 text-left">Expediente</th>
                 <th class="px-4 py-2 text-left">Resolución</th>
-                <th class="px-4 py-2 text-left">Estatus</th>
               </tr>
             </thead>
 
@@ -136,79 +158,21 @@ const rechazar = (id) => {
                   {{ p.consejo?.nombre }}
                 </td>
 
-                <td class="px-4 py-2">
-                  <button @click="abrirExpediente(p)" class="text-indigo-600 hover:underline">
-                    Ver expediente
-                  </button>
-                </td>
-
                 <td class="px-4 py-2 space-x-3">
 
                   <button @click="aprobar(p.id)" class="text-green-600 font-bold text-lg">
-                    ✔
+                    <CheckBadgeIcon class="w-6 h-6" />
                   </button>
 
                   <button @click="rechazar(p.id)" class="text-red-600 font-bold text-lg">
-                    ✖
+                    <XMarkIcon class="w-6 h-6" />
                   </button>
-
                 </td>
-
-                <td class="px-4 py-2">
-                  <span :class="['px-2 py-1 text-xs rounded-full', estatusClass(p.estatus)]">
-                    {{ estatusLabel(p.estatus) }}
-                  </span>
-                </td>
-
               </tr>
-
             </tbody>
           </table>
-
         </div>
       </div>
     </div>
-
-    <!-- Modal Expediente -->
-    <div v-if="showExpediente" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-
-      <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
-
-        <button @click="cerrarExpediente" class="absolute top-3 right-3 text-gray-500">
-          ✕
-        </button>
-
-        <h3 class="text-lg font-semibold mb-4">
-          Expediente
-        </h3>
-
-        <div v-if="selected?.documentos?.length">
-
-          <ul class="space-y-2">
-
-            <li v-for="doc in selected.documentos" :key="doc.id"
-              class="flex justify-between items-center border-b pb-1">
-
-              <span class="text-sm capitalize">
-                {{ doc.tipo.replaceAll('_', ' ') }}
-              </span>
-
-              <a :href="`/storage/${doc.archivo}`" target="_blank" class="text-indigo-600 hover:underline text-sm">
-                Ver PDF
-              </a>
-
-            </li>
-
-          </ul>
-
-        </div>
-
-        <div v-else class="text-gray-500">
-          No hay documentos cargados.
-        </div>
-
-      </div>
-    </div>
-
   </AuthenticatedLayout>
 </template>

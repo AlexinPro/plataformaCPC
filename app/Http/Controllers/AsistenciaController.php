@@ -12,7 +12,7 @@ class AsistenciaController extends Controller
 {
     public function index(Consejo $consejo)
     {
-        $integrantes = Integrante::where('consejo_id', $consejo->id)->get();
+        $integrantes = Integrante::where('consejo_id', $consejo->id)->orderBy('nombre')->get();
 
         $asistencias = Asistencia::whereIn(
             'integrante_id',

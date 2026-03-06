@@ -1,8 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { ref } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { ref, watchEffect } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
 import Form from './Form.vue'
+
+const page = usePage()
 
 const props = defineProps({
   postulaciones: { type: Array, default: () => [] },
@@ -23,6 +26,23 @@ const cerrarExpediente = () => {
   showExpediente.value = false
 }
 
+watchEffect(() => {
+  if (page.props.flash?.success) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Correcto',
+      text: page.props.flash.success
+    })
+  }
+  if (page.props.flash?.error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: page.props.flash.error
+    })
+  }
+})
+
 const estatusClass = (estatus) => {
   if (estatus === 'pendiente') return 'bg-yellow-100 text-yellow-800'
   if (estatus === 'aprobada') return 'bg-green-100 text-green-800'
@@ -36,17 +56,32 @@ const estatusLabel = (estatus) => {
   if (estatus === 'no_aprobada') return 'No Aprobada'
   return 'Desconocido'
 }
+
+const formatearFecha = (fecha) => {
+  if (!fecha) return '-'
+  const f = fecha.split('T')[0]
+  const [year, month, day] = f.split('-')
+  return `${day}/${month}/${year}`
+}
+
+/* EXPORTAR EXCEL */
+function exportarPostulacionesExcel() {
+  const tabla = document.querySelector('#tabla-postulaciones-excel')
+  if (!tabla) return
+  const blob = new Blob(['\ufeff' + tabla.outerHTML], {
+    type: 'application/vnd.ms-excel'
+  })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = 'postulaciones.xls'
+  link.click()
+}
 </script>
 
+
 <template>
+
   <AuthenticatedLayout>
-
-    <div class="mt-2 mb-4">
-      <Link :href="route('dashboard')" class="text-gray-600 hover:underline">
-        ← Volver a Consejos de Participación Ciudadana
-      </Link>
-    </div>
-
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-bold">
         Sección de Postulaciones
@@ -62,113 +97,133 @@ const estatusLabel = (estatus) => {
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="mb-4 flex justify-end space-x-2">
+          <button @click="exportarPostulacionesExcel"
+            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            Exportar Excel
+          </button>
 
-        <div class="mb-4 flex justify-end">
           <button @click="showModal = true" class="px-4 py-2 text-white rounded-md" style="background-color:#636569;">
             Nueva postulación
           </button>
         </div>
 
         <div class="bg-white shadow-sm sm:rounded-lg p-6">
-
           <div v-if="!postulaciones.length" class="text-gray-500">
             No hay postulaciones registradas.
           </div>
 
           <div v-else class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead>
+            <table class="min-w-full text-sm text-left border border-gray-200">
+              <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
                 <tr>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Nombre</th>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Consejo</th>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Expediente</th>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Estatus</th>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Fecha Postulación</th>
-                  <th class="px-4 py-2 text-left text-sm font-semibold">Fecha Resolución</th>
+                  <th class="px-6 py-3">Nombre</th>
+                  <th class="px-6 py-3">Consejo</th>
+                  <th class="px-6 py-3">Expediente</th>
+                  <th class="px-6 py-3">Acta</th>
+                  <th class="px-6 py-3">Estatus</th>
+                  <th class="px-6 py-3">Fecha Postulación</th>
+                  <th class="px-6 py-3">Fecha Resolución</th>
                 </tr>
               </thead>
 
               <tbody class="divide-y divide-gray-200">
-                <tr v-for="p in postulaciones" :key="p.id">
-
-                  <td class="px-4 py-2">
+                <tr v-for="p in postulaciones" :key="p.id" class="hover:bg-gray-50 transition">
+                  <td class="px-6 py-4 font-medium text-gray-900">
                     {{ p.nombre }} {{ p.apellidos }}
                   </td>
-
-                  <td class="px-4 py-2">
+                  <td class="px-6 py-4">
                     {{ p.consejo?.nombre }}
-                  </td>
-
-                  <td class="px-4 py-2">
-                    <button @click="abrirExpediente(p)" class="text-indigo-600 hover:underline">
+                 </td>
+                  <td class="px-6 py-4">
+                    <button @click="abrirExpediente(p)" class="text-yellow-600 hover:underline font-medium">
                       Ver expediente
                     </button>
                   </td>
-
-                  <td class="px-4 py-2">
-                    <span :class="['px-2 py-1 text-xs rounded-full', estatusClass(p.estatus)]">
+                  <td class="px-6 py-4">
+                    <a v-if="p.acta_resolucion" :href="`/storage/${p.acta_resolucion}`" target="_blank"
+                      class="text-blue-600 hover:underline">
+                      Ver acta
+                    </a>
+                    <span v-else class="text-gray-400">
+                      —
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span :class="[
+                      'px-3 py-1 text-xs rounded-full font-semibold',
+                      estatusClass(p.estatus)
+                    ]">
                       {{ estatusLabel(p.estatus) }}
                     </span>
                   </td>
-
-                  <td class="px-4 py-2 text-sm">
-                    {{ p.fecha_postulacion
-                      ? new Date(p.fecha_postulacion).toLocaleDateString()
-                    : '-' }}
+                  <td class="px-6 py-4">
+                    {{ formatearFecha(p.fecha_postulacion) }}
                   </td>
-
-                  <td class="px-4 py-2 text-sm">
-                    {{ p.fecha_validacion
-                      ? new Date(p.fecha_validacion).toLocaleDateString()
-                      : '-' }}
+                  <td class="px-6 py-4">
+                    {{ formatearFecha(p.fecha_validacion) }}
                   </td>
                 </tr>
               </tbody>
             </table>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal expediente -->
+    <!-- TABLA OCULTA PARA EXPORTAR -->
+    <table id="tabla-postulaciones-excel" style="display:none">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Consejo</th>
+          <th>Cargo</th>
+          <th>Estatus</th>
+          <th>Fecha Postulación</th>
+          <th>Fecha Resolución</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="p in postulaciones" :key="p.id">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.apellidos }}</td>
+          <td>{{ p.consejo?.nombre }}</td>
+          <td>{{ p.puesto }}</td>
+          <td>{{ estatusLabel(p.estatus) }}</td>
+          <td>{{ formatearFecha(p.fecha_postulacion) }}</td>
+          <td>{{ formatearFecha(p.fecha_validacion) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- MODAL EXPEDIENTE -->
     <div v-if="showExpediente" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-
       <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative">
-
         <button @click="cerrarExpediente" class="absolute top-3 right-3 text-gray-500">✕</button>
-
         <h3 class="text-lg font-semibold mb-4">
           Expediente
         </h3>
-
         <div v-if="selected?.documentos?.length">
-
           <ul class="space-y-2">
             <li v-for="doc in selected.documentos" :key="doc.id"
               class="flex justify-between items-center border-b pb-1">
-
               <span class="text-sm font-medium capitalize">
                 {{ doc.tipo.replaceAll('_', ' ') }}
               </span>
-
-              <a :href="`/storage/${doc.archivo}`" target="_blank" class="text-indigo-600 hover:underline text-sm">
+              <a :href="`/storage/${doc.archivo}`" target="_blank" class="text-green-600 hover:underline text-sm">
                 Ver PDF
               </a>
-
             </li>
           </ul>
-
         </div>
-
         <div v-else class="text-gray-500">
           No hay documentos cargados.
         </div>
-
       </div>
     </div>
-
     <Form v-if="showModal" :consejos="consejos" @close="showModal = false" />
-
   </AuthenticatedLayout>
 </template>

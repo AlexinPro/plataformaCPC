@@ -23,6 +23,7 @@ class LegalidadController extends Controller
             'integrantes' => Integrante::where('consejo_id', $consejo->id)->get(),
             'registros' => Legalidad::with('integrante')
                 ->where('consejo_id', $consejo->id)
+            //    ->orderBy('nombre')
                 ->get(),
         ]);
     }

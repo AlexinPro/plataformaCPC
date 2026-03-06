@@ -266,6 +266,42 @@ const getSemaforoClase = (integrante) => {
     <!-- FORMULARIO -->
     <Form :show="showForm" :form="form" :editingId="editingId" @close="showForm = false" @submit="submitForm" />
 
+    <!-- MODAL DE BAJA -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 class="text-lg font-bold mb-4">Registrar baja de integrante</h2>
+        <!-- MOTIVO -->
+        <label class="block font-semibold mb-1">Motivo</label>
+        <select v-model="bajaForm.motivo" class="w-full border rounded px-3 py-2 mb-4">
+          <option value="">Seleccione un motivo</option>
+          <option value="inasistencia">Inasistencia</option>
+          <option value="sancion">Sanciones</option>
+          <option value="fin_periodo">Fin de periodo / No realizó reelección</option>
+          <option value="renuncia">Renuncia</option>
+        </select>
+
+        <!-- FECHA -->
+        <label class="block font-semibold mb-1">Fecha de baja</label>
+        <input type="date" v-model="bajaForm.fecha_baja" class="w-full border rounded px-3 py-2 mb-4" />
+
+        <!-- PDF -->
+        <label class="block font-semibold mb-1">Evidencia PDF</label>
+        <input type="file" accept="application/pdf" class="w-full border rounded px-3 py-2 mb-4"
+          @change="e => bajaForm.evidencia_pdf = e.target.files[0]" />
+
+        <div class="flex justify-end space-x-2">
+          <button @click="showDeleteModal = false" class="px-4 py-2 bg-gray-300 rounded">
+            Cancelar
+          </button>
+
+          <button @click="confirmarEliminacion"
+            :disabled="!bajaForm.motivo || !bajaForm.fecha_baja || !bajaForm.evidencia_pdf"
+            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-800 disabled:opacity-50">
+            Confirmar baja
+          </button>
+        </div>
+      </div>
+    </div>
   </AuthenticatedLayout>
 </template>
 

@@ -213,10 +213,10 @@ Route::middleware('permission:legalidad.ver')->group(function () {
     Route::get('/postulaciones/validacion', [PostulacionController::class, 'validacion'])
         ->name('postulaciones.validacion');   
         
-    Route::patch('/postulaciones/{postulacion}/aprobar',  [PostulacionController::class, 'aprobar'])
+    Route::post('/postulaciones/{postulacion}/aprobar',  [PostulacionController::class, 'aprobar'])
         ->name('postulaciones.aprobar');
 
-    Route::patch('/postulaciones/{postulacion}/rechazar',  [PostulacionController::class, 'rechazar'])
+    Route::post('/postulaciones/{postulacion}/rechazar',  [PostulacionController::class, 'rechazar'])
         ->name('postulaciones.rechazar');
     
         

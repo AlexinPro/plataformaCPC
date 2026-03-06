@@ -39,10 +39,8 @@ export default {
   },
 
   methods: {
-    /**
-     * Convierte cualquier fecha a formato YYYY-MM-DD
-     * para que funcione con <input type="date">
-     */
+    /*convierte cualquier fecha a formato YYYY-MM-DD
+     *para que funcione con <input type="date">*/
     formatDateForInput(date) {
       if (!date) return "";
 
@@ -52,6 +50,20 @@ export default {
       const day = String(d.getDate()).padStart(2, "0");
 
       return `${year}-${month}-${day}`;
+    },
+
+    autoCalcularFin() {
+      if (!this.form.inicio_cargo) return;
+      const inicio = new Date(this.form.inicio_cargo);
+      //sumamos 3 años
+      const fin = new Date(inicio);
+      fin.setFullYear(fin.getFullYear() + 3);
+      const year = fin.getFullYear();
+      const month = String(fin.getMonth() + 1).padStart(2, "0");
+      const day = String(fin.getDate()).padStart(2, "0");
+      this.form.fin_cargo = `${year}-${month}-${day}`;
+      //recalcula periodo
+      this.calcularPeriodo();
     },
 
     calcularPeriodo() {
@@ -97,7 +109,7 @@ export default {
       }, 300);
     },
   },
-  
+
 };
 </script>
 
@@ -113,11 +125,8 @@ export default {
 
         <!-- INTEGRANTE -->
         <label class="block mb-2 font-semibold">Integrante</label>
-        <select
-          v-model="form.integrante_id"
-          class="w-full border rounded px-3 py-2 mb-3 bg-gray-100"
-          :disabled="esReeleccion"
-        >
+        <select v-model="form.integrante_id" class="w-full border rounded px-3 py-2 mb-3 bg-gray-100"
+          :disabled="esReeleccion">
           <option value="">Seleccione...</option>
           <option v-for="i in integrantes" :key="i.id" :value="i.id">
             {{ i.nombre }} {{ i.apellido }}
@@ -125,24 +134,14 @@ export default {
         </select>
 
         <!-- FECHA INICIO -->
-        <label class="block mb-2 font-semibold">Fecha inicio</label>
-        <input
-          type="date"
-          v-model="form.inicio_cargo"
-          class="w-full border rounded px-3 py-2 mb-3"
-          :disabled="esReeleccion"
-          @change="calcularPeriodo"
-        />
+        <label class="block mb-2 font-semibold">Fecha de inicio</label>
+        <input type="date" v-model="form.inicio_cargo" class="w-full border rounded px-3 py-2 mb-3"
+          :disabled="esReeleccion" @change="autoCalcularFin" />
 
         <!-- FECHA FIN -->
-        <label class="block mb-2 font-semibold">Fecha fin</label>
-        <input
-          type="date"
-          v-model="form.fin_cargo"
-          class="w-full border rounded px-3 py-2 mb-3"
-          :disabled="esReeleccion"
-          @change="calcularPeriodo"
-        />
+        <label class="block mb-2 font-semibold">Fecha de culminación</label>
+        <input type="date" v-model="form.fin_cargo" class="w-full border rounded px-3 py-2 mb-3"
+          :disabled="esReeleccion" @change="calcularPeriodo" />
 
         <!-- DOCUMENTOS SOLO EN REELECCIÓN -->
         <div v-if="esReeleccion">
@@ -150,34 +149,20 @@ export default {
           <label class="block mb-2 font-semibold">
             Nombramiento (PDF)
           </label>
-          <input
-            type="file"
-            accept="application/pdf"
-            @change="handleNombramiento"
-            class="w-full border rounded px-3 py-2 mb-3"
-            required
-          />
+          <input type="file" accept="application/pdf" @change="handleNombramiento"
+            class="w-full border rounded px-3 py-2 mb-3" required />
 
           <label class="block mb-2 font-semibold">
             Carta de reelección (PDF)
           </label>
-          <input
-            type="file"
-            accept="application/pdf"
-            @change="handleCarta"
-            class="w-full border rounded px-3 py-2 mb-3"
-            required
-          />
+          <input type="file" accept="application/pdf" @change="handleCarta" class="w-full border rounded px-3 py-2 mb-3"
+            required />
 
           <label class="block mb-2 font-semibold">
             Otros documentos (PDF, opcional)
           </label>
-          <input
-            type="file"
-            accept="application/pdf"
-            @change="handleOtros"
-            class="w-full border rounded px-3 py-2 mb-3"
-          />
+          <input type="file" accept="application/pdf" @change="handleOtros"
+            class="w-full border rounded px-3 py-2 mb-3" />
 
           <p class="text-sm text-yellow-700 mt-2">
             Los documentos serán revisados por un Administrador.
@@ -186,19 +171,12 @@ export default {
 
         <!-- BOTONES -->
         <div class="flex justify-end mt-4">
-          <button
-            type="button"
-            @click="$emit('close')"
-            class="px-4 py-2 bg-gray-500 text-white rounded mr-2"
-          >
+          <button type="button" @click="$emit('close')" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">
             Cancelar
           </button>
 
-          <button
-            type="submit"
-            class="px-4 py-2 text-white rounded"
-            :style="{ backgroundColor: esReeleccion ? '#7A1F32' : '#C7A447' }"
-          >
+          <button type="submit" class="px-4 py-2 text-white rounded"
+            :style="{ backgroundColor: esReeleccion ? '#7A1F32' : '#C7A447' }">
             Guardar
           </button>
         </div>
