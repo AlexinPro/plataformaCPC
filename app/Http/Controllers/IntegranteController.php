@@ -29,13 +29,14 @@ class IntegranteController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'genero' => 'required|string|max:50',
+            'genero' => 'nullable|string|max:50',
             'colonia' => 'nullable|string|max:255',
-            'discapacidad' => 'required|string|max:25',
+            'discapacidad' => 'nullable|string|max:25',
             'discapacidad_tipo' => 'nullable|string|max:255|required_if:discapacidad,si',
             'puesto' => 'required|string|max:255',
             'correo' => 'required|email|unique:integrantes,correo',
             'consejo_id' => 'required|exists:consejos,id',
+            'formula' => 'required|integer|min:1',
         ]);
 
         Integrante::create($validated);
@@ -48,9 +49,9 @@ class IntegranteController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'genero' => 'required|string|max:50',
+            'genero' => 'nullable|string|max:50',
             'colonia' => 'nullable|string|max:255',
-            'discapacidad' => 'required|string|max:25',
+            'discapacidad' => 'nullable|string|max:25',
             'discapacidad_tipo' => 'nullable|string|max:255|required_if:discapacidad,si',
             'puesto' => 'required|string|max:255',
             'correo' => 'required|email|unique:integrantes,correo,' . $integrante->id,

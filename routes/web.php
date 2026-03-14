@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 /*
 |--------------------------------------------------------------------------
 | Controllers
@@ -26,11 +26,12 @@ use App\Http\Controllers\UserController;
 | Rutas públicas
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return Inertia::render('Dashboard');
 });
 
-Route::get('/about', fn () => Inertia::render('About'))
+Route::get('/about', fn() => Inertia::render('About'))
     ->name('about');
 
 /*
@@ -48,6 +49,16 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+
+    //RUTA PARA AVISO DE PRIVACIDAD
+    Route::post('/privacy/accept', function (Request $request) {
+
+    $request->user()->update([
+        'privacy_accepted' => true,
+        'privacy_accepted_at' => now()
+    ]);
+    return back();
+    })->name('privacy.accept');
 
     /*
     |--------------------------------------------------------------------------
@@ -111,7 +122,7 @@ Route::middleware('auth')->group(function () {
         ->name('consejos.reportes');
 
     Route::patch('/consejos/{consejo}/descripcion', [ConsejoController::class, 'updateDescripcion'])
-    ->name('consejos.descripcion.update');
+        ->name('consejos.descripcion.update');
 
     /*
     |--------------------------------------------------------------------------
@@ -174,62 +185,62 @@ Route::middleware('auth')->group(function () {
 | LEGALIDAD Y REPORTES
 |--------------------------------------------------------------------------
 */
-Route::middleware('permission:legalidad.ver')->group(function () {
+    Route::middleware('permission:legalidad.ver')->group(function () {
 
-    // ======= LEGALIDAD (USUARIOS NORMALES Y ADMIN) =======
+        // ======= LEGALIDAD (USUARIOS NORMALES Y ADMIN) =======
 
-    Route::get('/legalidad/{consejo}', [LegalidadController::class, 'index'])
-        ->name('legalidad.index');
+        Route::get('/legalidad/{consejo}', [LegalidadController::class, 'index'])
+            ->name('legalidad.index');
 
-    Route::post('/legalidad/{consejo}', [LegalidadController::class, 'store'])
-        ->name('legalidad.store');
+        Route::post('/legalidad/{consejo}', [LegalidadController::class, 'store'])
+            ->name('legalidad.store');
 
-    Route::post('/legalidad/{legalidad}/reeleccion', [LegalidadController::class, 'solicitarReeleccion'])
-        ->name('legalidad.reeleccion');
+        Route::post('/legalidad/{legalidad}/reeleccion', [LegalidadController::class, 'solicitarReeleccion'])
+            ->name('legalidad.reeleccion');
 
-    Route::delete('/legalidad/{legalidad}', [LegalidadController::class, 'destroy'])
-        ->name('legalidad.destroy');
+        Route::delete('/legalidad/{legalidad}', [LegalidadController::class, 'destroy'])
+            ->name('legalidad.destroy');
 
-    // ======= SOLO SUPER ADMIN (VALIDACIONES) =======
-    Route::middleware(['auth', 'role:super_admin'])->group(function () {
+        // ======= SOLO SUPER ADMIN (VALIDACIONES) =======
+        Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
-        Route::get('/legalidad/estatus/{consejo}', [LegalidadController::class, 'estatus'])
-            ->name('legalidad.estatus');
+            Route::get('/legalidad/estatus/{consejo}', [LegalidadController::class, 'estatus'])
+                ->name('legalidad.estatus');
 
-        Route::post('/legalidad/{legalidad}/aprobar', [LegalidadController::class, 'aprobarReeleccion'])
-            ->name('legalidad.aprobar');
+            Route::post('/legalidad/{legalidad}/aprobar', [LegalidadController::class, 'aprobarReeleccion'])
+                ->name('legalidad.aprobar');
 
-        Route::post('/legalidad/{legalidad}/rechazar', [LegalidadController::class, 'rechazarReeleccion'])
-            ->name('legalidad.rechazar');
-    });
+            Route::post('/legalidad/{legalidad}/rechazar', [LegalidadController::class, 'rechazarReeleccion'])
+                ->name('legalidad.rechazar');
+        });
 
-    //-------------Postulaciones----------------
-    Route::get('/postulaciones', [PostulacionController::class, 'index'])
-        ->name('postulaciones.index');
+        //-------------Postulaciones----------------
+        Route::get('/postulaciones', [PostulacionController::class, 'index'])
+            ->name('postulaciones.index');
 
-    Route::post('/postulaciones', [PostulacionController::class, 'store'])
-        ->name('postulaciones.store'); 
+        Route::post('/postulaciones', [PostulacionController::class, 'store'])
+            ->name('postulaciones.store');
 
-    Route::get('/postulaciones/validacion', [PostulacionController::class, 'validacion'])
-        ->name('postulaciones.validacion');   
-        
-    Route::post('/postulaciones/{postulacion}/aprobar',  [PostulacionController::class, 'aprobar'])
-        ->name('postulaciones.aprobar');
+        Route::get('/postulaciones/validacion', [PostulacionController::class, 'validacion'])
+            ->name('postulaciones.validacion');
 
-    Route::post('/postulaciones/{postulacion}/rechazar',  [PostulacionController::class, 'rechazar'])
-        ->name('postulaciones.rechazar');
-    
-        
+        Route::post('/postulaciones/{postulacion}/aprobar',  [PostulacionController::class, 'aprobar'])
+            ->name('postulaciones.aprobar');
+
+        Route::post('/postulaciones/{postulacion}/rechazar',  [PostulacionController::class, 'rechazar'])
+            ->name('postulaciones.rechazar');
+
+
         //rutas para super_admin
-            
 
-    // ======= REPORTES =======
-    Route::get('/consejos/reportes', [ConsejoController::class, 'index'])
-        ->name('consejos.reportes');
 
-    Route::get('/consejos/{consejo}/reportes', [ReporteController::class, 'show'])
-        ->name('reportes.consejo');
-});
+        // ======= REPORTES =======
+        Route::get('/consejos/reportes', [ConsejoController::class, 'index'])
+            ->name('consejos.reportes');
+
+        Route::get('/consejos/{consejo}/reportes', [ReporteController::class, 'show'])
+            ->name('reportes.consejo');
+    });
 
     /*
     |--------------------------------------------------------------------------

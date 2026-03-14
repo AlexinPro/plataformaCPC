@@ -5,6 +5,7 @@ import { useForm, Link } from '@inertiajs/vue3'
 import { FolderOpenIcon } from '@heroicons/vue/24/solid'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import Form from './Form.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
   consejo: Object,
@@ -48,6 +49,7 @@ const form = useForm({
   discapacidad: false,
   discapacidad_tipo: '',
   consejo_id: props.consejo.id,
+  formula: ''
 })
 
 function openForm() {
@@ -59,7 +61,9 @@ function openForm() {
 }
 
 function editIntegrante(integrante) {
+
   editingId.value = integrante.id
+
   form.nombre = integrante.nombre
   form.apellido = integrante.apellido
   form.puesto = integrante.puesto
@@ -69,17 +73,24 @@ function editIntegrante(integrante) {
   form.discapacidad = integrante.discapacidad === 'si'
   form.discapacidad_tipo = integrante.discapacidad_tipo ?? ''
   form.consejo_id = integrante.consejo_id
+  form.formula = integrante.formula
+
   showForm.value = true
 }
 
 function submitForm() {
   form.discapacidad = form.discapacidad ? 'si' : 'no'
-
   if (editingId.value) {
     form.put(route('integrantes.update', editingId.value), {
       onSuccess: () => {
         form.reset()
         showForm.value = false
+        Swal.fire({
+          icon: 'success',
+          title: 'Integrante actualizado',
+          text: 'Los datos del integrante se actualizaron correctamente.',
+          confirmButtonColor: '#16a34a'
+        })
       }
     })
   } else {
@@ -87,6 +98,12 @@ function submitForm() {
       onSuccess: () => {
         form.reset()
         showForm.value = false
+        Swal.fire({
+          icon: 'success',
+          title: 'Integrante agregado',
+          text: 'El integrante se registró correctamente.',
+          confirmButtonColor: '#16a34a'
+        })
       }
     })
   }
@@ -100,36 +117,68 @@ const bajaForm = useForm({
   motivo: '',
   fecha_baja: '',
   evidencia_pdf: null,
-  _method: 'delete',
 })
 
+const esErrorRegistro = computed(() => bajaForm.motivo === 'error_registro')
+
 function solicitarEliminacion(id) {
+
   integranteAEliminar.value = id
   bajaForm.reset()
   showDeleteModal.value = true
 }
 
 function confirmarEliminacion() {
-  if (!bajaForm.motivo || !bajaForm.fecha_baja || !bajaForm.evidencia_pdf) return
+  if (bajaForm.motivo === 'error_registro') {
+    bajaForm.post(route('integrantes.baja', integranteAEliminar.value), {
 
-  bajaForm.post(route('integrantes.destroy', integranteAEliminar.value), {
+      onSuccess: () => {
+        showDeleteModal.value = false
+        integranteAEliminar.value = null
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Integrante eliminado',
+          text: 'El integrante se eliminó por error de registro.',
+          confirmButtonColor: '#16a34a'
+        })
+      }
+    })
+    return
+  }
+
+  if (!bajaForm.fecha_baja || !bajaForm.evidencia_pdf) return
+  bajaForm.post(route('integrantes.baja', integranteAEliminar.value), {
     forceFormData: true,
-    onSuccess: () => {
+   onSuccess: () => {
       showDeleteModal.value = false
       integranteAEliminar.value = null
+      Swal.fire({
+        icon: 'success',
+        title: 'Baja registrada',
+        text: 'La baja del integrante se registró correctamente.',
+        confirmButtonColor: '#16a34a'
+      })
     }
   })
 }
 
 /* ---------- AGRUPAR FÓRMULAS ---------- */
-const formulas = computed(() => {
-  const grouped = []
-  for (let i = 0; i < props.integrantes.length; i += 2) {
-    grouped.push(props.integrantes.slice(i, i + 2))
-  }
-  return grouped
+const formulas = computed(() => { 
+
+ const grouped = {} 
+  props.integrantes.forEach(i => { 
+    const key = i.formula ?? 0 
+    if (!grouped[key]) {
+      grouped[key] = []
+    } 
+    grouped[key].push(i) 
+  })
+  return Object.entries(grouped)
+      .sort((a,b) => Number(a[0]) - Number(b[0])) 
 })
 
+/* ---------- SEMÁFORO DOCUMENTOS ---------- */
 const getSemaforoClase = (integrante) => {
   const total = integrante?.documentos?.length || 0
   if (total === 0) return 'bg-red-500'
@@ -180,8 +229,8 @@ const getSemaforoClase = (integrante) => {
           </thead>
 
           <tbody>
-            <tr v-for="(f, i) in formulas" :key="i">
-              <td class="px-4 py-2 border text-center">{{ i + 1 }}</td>
+            <tr v-for="([numero, f]) in formulas" :key="numero">
+              <td class="px-4 py-2 border text-center">{{ numero }}</td>
 
               <td class="px-4 py-2 border">
                 <div v-if="f[0]" class="flex items-center gap-2">
@@ -278,16 +327,21 @@ const getSemaforoClase = (integrante) => {
           <option value="sancion">Sanciones</option>
           <option value="fin_periodo">Fin de periodo / No realizó reelección</option>
           <option value="renuncia">Renuncia</option>
+          <option value="error_registro">Error de registro</option>
         </select>
 
         <!-- FECHA -->
+         <div v-if="!esErrorRegistro" class="mb-4">
         <label class="block font-semibold mb-1">Fecha de baja</label>
-        <input type="date" v-model="bajaForm.fecha_baja" class="w-full border rounded px-3 py-2 mb-4" />
+        <input type="date" v-model="bajaForm.fecha_baja" class="w-full border rounded px-3 py-2 mb-4"/>
+         </div>
 
         <!-- PDF -->
+         <div v-if="!esErrorRegistro" class="mb-4">
         <label class="block font-semibold mb-1">Evidencia PDF</label>
         <input type="file" accept="application/pdf" class="w-full border rounded px-3 py-2 mb-4"
-          @change="e => bajaForm.evidencia_pdf = e.target.files[0]" />
+          @change="e => bajaForm.evidencia_pdf = e.target.files[0]"/>
+        </div>
 
         <div class="flex justify-end space-x-2">
           <button @click="showDeleteModal = false" class="px-4 py-2 bg-gray-300 rounded">
@@ -295,7 +349,7 @@ const getSemaforoClase = (integrante) => {
           </button>
 
           <button @click="confirmarEliminacion"
-            :disabled="!bajaForm.motivo || !bajaForm.fecha_baja || !bajaForm.evidencia_pdf"
+            :disabled="!bajaForm.motivo || (!esErrorRegistro && (!bajaForm.fecha_baja || !bajaForm.evidencia_pdf))"
             class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-800 disabled:opacity-50">
             Confirmar baja
           </button>

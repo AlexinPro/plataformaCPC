@@ -35,7 +35,8 @@ const renderChart = () => {
       scales: { 
         y: { 
           beginAtZero: true,
-          ticks: { precision: 0 }
+          max: 30,
+          ticks: {stepSize:5, precision: 0 }
         },
       }
     }

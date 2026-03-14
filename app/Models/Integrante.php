@@ -23,6 +23,7 @@ class Integrante extends Model
         'puesto',
         'correo',
         'consejo_id',
+        'formula'
     ];
     
     //relacion un integrane pertenece a varios consejos
