@@ -35,7 +35,7 @@ class AsistenciaController extends Controller
         ]);
     }
 
-    // 📅 Vista calendario
+    //Vista calendario
     public function calendar(Consejo $consejo)
     {
         $integrantes = Integrante::where('consejo_id', $consejo->id)->get();
@@ -52,7 +52,7 @@ class AsistenciaController extends Controller
         ]);
     }
 
-    // 📄 Historial por integrante
+    //Historial por integrante
     public function history($consejoId, $integranteId)
     {
         $integrante = Integrante::where('id', $integranteId)
@@ -75,7 +75,7 @@ class AsistenciaController extends Controller
         ]);
     }
 
-    // 🟢 REGISTRO POR SESIÓN (desde calendario)
+    //Registro por sesion desde calendario
     public function storeSesion(Request $request, Consejo $consejo)
     {
         $validated = $request->validate([
@@ -87,7 +87,7 @@ class AsistenciaController extends Controller
             'evidencia' => 'nullable|file|mimes:pdf|max:4096',
         ]);
 
-        // 📎 Guardar evidencia (una sola vez por sesión)
+        //Guardar evidencia (una sola vez por sesión)
         $evidenciaPath = null;
 
         if ($request->hasFile('evidencia')) {
@@ -112,7 +112,7 @@ class AsistenciaController extends Controller
         return back()->with('success', 'Asistencia registrada correctamente');
     }
 
-    // 📁 Vista de evidencias
+    //Vista de evidencias
     public function evidencias(Consejo $consejo)
     {
         $integrantes = Integrante::where('consejo_id', $consejo->id)->pluck('id');

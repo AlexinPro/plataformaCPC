@@ -16,7 +16,7 @@ class DocuController extends Controller
 
         return Inertia::render('Docu/Index', [
             'integrante' => $integrante,
-            'flash' => session('success')
+            'flash' => session('success') //para después de regresar a la vista de consejos 
         ]);
     }
 
@@ -38,9 +38,8 @@ class DocuController extends Controller
             if ($request->hasFile($tipo)) {
                 $archivo = $request->file($tipo);
 
-                $ruta = $archivo->store("documentos/{$integranteId}", 'public');
+                $ruta = $archivo->store("documentos/{$integranteId}", 'public'); // se habilita con storage:link
 
-                // Guarda o actualiza
                 Docu::updateOrCreate(
                     [
                         'integrante_id' => $integranteId,
@@ -56,6 +55,7 @@ class DocuController extends Controller
         return redirect()->back()->with('success', 'Documentos subidos correctamente.');
     }
 
+    //Manejo de descarga de archivos
     public function download($id)
     {
         $documento = Docu::findOrFail($id);

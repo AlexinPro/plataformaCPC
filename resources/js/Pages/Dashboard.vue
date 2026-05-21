@@ -11,7 +11,8 @@ const props = defineProps({
   data: Array,
   generoLabels: Array,
   generoData: Object,
-  generoTotales: Object // 
+  generoTotales: Object,
+  discapacidadTotales: Object 
 })
 
 const generoOrder = [
@@ -26,7 +27,16 @@ const colorByGenero = {
   'Hombre': '#6E6E6E',
   'Prefiero autodescribirme': '#C9A227',
   'Prefiero no responder': '#3F6B4C'
+
 };
+
+const discapacidadLabels = ['Con discapacidad', 'Sin discapacidad']
+
+const discapacidadData = discapacidadLabels.map(d => props.discapacidadTotales[d] ?? 0)
+const discapacidadColors = [
+  '#AF1731',
+  '#246257'
+]
 
 const pieLabels = generoOrder
 const pieData = generoOrder.map(g => props.generoTotales[g] ?? 0)
@@ -45,7 +55,7 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
 
     <div class="px-6 py-8 space-y-10">
 
-      <!-- === GRAFICA 1 === -->
+      <!-- === Gráficoa de pastel 2 === -->
       <div class="bg-white border rounded-xl shadow p-6">
         <h2 class="text-xl font-bold mb-6">Integrantes por Consejo</h2>
 
@@ -54,7 +64,7 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
         </div>
       </div>
 
-      <!-- === GRAFICA 2 === -->
+      <!-- Grafica 2 -->
       <div class="bg-white border rounded-xl shadow p-6">
         <h2 class="text-xl font-bold mb-6">Integrantes por Género y Consejo</h2>
 
@@ -63,7 +73,7 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
         </div>
       </div>
 
-      <!-- === GRAFICA 3 === -->
+      <!-- Gracfica 3-->
       <div class="bg-white border rounded-xl shadow p-6">
         <h2 class="text-xl font-bold mb-6">Distribución por Género</h2>
 
@@ -72,7 +82,20 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
             title="Distribución de Integrantes por Género" />
         </div>
       </div>
+      
+      <!-- grafica 4-->
+       <div class="bg-white border rounded-xl shadow p-6">
+        <h2 class ="text-xl font-bold mb-6">Distribución por Discapacidad</h2>
 
+        <div class="h-[300px]">
+          <PieChart
+          :labels="discapacidadLabels"
+          :data="discapacidadData"
+          :colors="discapacidadColors"
+          tittle="Discapacidad"
+          />
+        </div>
+       </div>
 
     </div>
   </AuthenticatedLayout>

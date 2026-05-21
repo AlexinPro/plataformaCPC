@@ -17,16 +17,12 @@ const showForm = ref(false)
 const fechaSeleccionada = ref(null)
 const selectedDate = ref(null)
 
-/* =========================
-   Cerrar modal
-========================= */
+//cerra modal
 function cerrarModal() {
   showForm.value = false
 }
 
-/* =========================
-   Mostrar alerta éxito
-========================= */
+//Mostrar alerta éxito
 function mostrarAlerta() {
   Swal.fire({
     icon: 'success',
@@ -37,9 +33,7 @@ function mostrarAlerta() {
   })
 }
 
-/* =========================
-   Fix fecha sin timezone
-========================= */
+// formato de fecha sin timezone
 function formatearFechaLocal(date) {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
@@ -47,9 +41,7 @@ function formatearFechaLocal(date) {
   return `${y}-${m}-${d}`
 }
 
-/* =========================
-   Abrir formulario
-========================= */
+// Abrir formulario al hacer click en un día del calendario
 function abrirFormulario(day) {
   const fecha = formatearFechaLocal(day.date)
   fechaSeleccionada.value = fecha
@@ -57,10 +49,9 @@ function abrirFormulario(day) {
   showForm.value = true
 }
 
-/* =========================
-   Colores del calendario
-========================= */
+// CSolores del calendarios
 const calendarAttributes = computed(() => {
+  
   return props.sesiones.map(s => {
     let color = ''
 
@@ -88,9 +79,7 @@ const calendarAttributes = computed(() => {
   })
 })
 
-/* =========================
-   Cuando el form guarda
-========================= */
+//Cuando el form guarda
 function handleSaved() {
   cerrarModal()
   mostrarAlerta()

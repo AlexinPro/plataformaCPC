@@ -23,7 +23,7 @@ class ConvocatoriaController extends Controller
 
     public function store(Request $request, Consejo $consejo)
     {
-        // 1️⃣ Validación base
+        //Validación base
         $data = $request->validate([
             'tipo_sesion' => 'required|in:ordinaria,solemne,extraordinaria',
             'fecha' => 'required|date',
@@ -38,18 +38,18 @@ class ConvocatoriaController extends Controller
             'estado_sesion' => 'nullable|boolean',
         ]);
 
-        // 2️⃣ Normalizar booleanos
+        //Normalizar booleanos
         $data['estado_convocatoria'] = $data['estado_convocatoria'] ?? false;
         $data['estado_sesion'] = $data['estado_sesion'] ?? false;
 
-        // 3️⃣ Regla de negocio: no sesión sin convocatoria
+        //Regla de negocio: no sesión sin convocatoria
         if ($data['estado_sesion'] && !$data['estado_convocatoria']) {
             return back()->withErrors([
                 'estado_sesion' => 'No se puede registrar una sesión sin convocatoria.',
             ]);
         }
 
-        // 4️⃣ Guardar archivos si existen
+        //Guardar archivos si existen
         if ($request->hasFile('documento')) {
             $data['documento'] = $request->file('documento')
                 ->store('convocatorias/documentos', 'public');
@@ -65,10 +65,10 @@ class ConvocatoriaController extends Controller
                 ->store('convocatorias/evidencias', 'public');
         }
 
-        // 5️⃣ Relación con consejo
+        //Relación con consejo
         $data['consejo_id'] = $consejo->id;
 
-        // 6️⃣ Crear convocatoria
+        //Crear convocatoria
         Convocatoria::create($data);
 
         return back()->with('success', 'Convocatoria guardada correctamente.');

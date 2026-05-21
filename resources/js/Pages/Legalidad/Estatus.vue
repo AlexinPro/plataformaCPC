@@ -15,7 +15,7 @@ export default {
   setup() {
     const page = usePage();
 
-    // 🔔 OBSERVAMOS FLASH COMO EN DOCUMENTOS
+    //mensaje de confirmacion despues de aprobar o rechazar una reeleccion
     watch(
       () => page.props.flash,
       (flash) => {
@@ -97,11 +97,12 @@ export default {
       return grupos;
     }
   },
-
+  
+  //funciones para formatear fechas, abrir modal, cerrar modal, aprobar, rechazar, obtener estatus
   methods: {
     formatearFecha(fecha) {
       if (!fecha) return "N/A";
-      return new Date(fecha).toLocaleDateString("es-MX");
+      return new Date(fecha).toLocaleDateString("es-MX"); //formato de fecha en español
     },
 
     abrirValidacion(periodo) {

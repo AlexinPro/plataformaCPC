@@ -30,10 +30,8 @@ class Integrante extends Model
     public function consejo(){
         return $this->belongsToMany(Consejo::class);
    }
-   /*relación muchos a muchos con consejos a través de la tabla de apoyo
-    public function consejos(){
-        return $this->belongsToMany(Consejo::class, 'consejo_integrante', 'integrante_id', 'consejo_id');
-    }*/
+   //relación muchos a muchos con consejos a través de la tabla de apoyo
+    
     public function documentos() 
     {
         return $this->hasMany(Docu::class,);

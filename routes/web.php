@@ -232,8 +232,6 @@ Route::middleware('auth')->group(function () {
 
 
         //rutas para super_admin
-
-
         // ======= REPORTES =======
         Route::get('/consejos/reportes', [ConsejoController::class, 'index'])
             ->name('consejos.reportes');

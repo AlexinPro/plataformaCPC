@@ -41,7 +41,7 @@ export default {
 
   methods: {
 
-    /* ================= SWEET ALERT ================= */
+    // mensajes de alerta con sweetalert 
     mostrarAlerta() {
       const flash = this.$page.props.flash;
 
@@ -57,7 +57,7 @@ export default {
       }
     },
 
-    /* ================= MODAL ================= */
+    // Abrir form de "creación"
     openCreateForm() {
       this.selectedLegalidad = null;
       this.showForm = true;
@@ -77,7 +77,7 @@ export default {
       router.get(route("legalidad.estatus", { consejo: this.consejo.id }));
     },
 
-    /* ================= HELPERS ================= */
+    // Función para formatear fechas a formato DD/MM/YYYY
     formatearFecha(fecha) {
       if (!fecha) return "N/A";
       // Tomamos solo los primeros 10 caracteres: YYYY-MM-DD
@@ -86,6 +86,7 @@ export default {
       return `${day}/${month}/${year}`;
     },
 
+    // Función para calcular el tiempo restante en formato "YY:MM:DD"
     calcularTiempoRestante(finCargo) {
       if (!finCargo) return "N/A";
 
@@ -112,7 +113,8 @@ export default {
         years--;
         months += 12;
       }
-
+ 
+      //formateo con ceros a la izquierda
       const pad = (n) => String(n).padStart(2, "0");
       return `${pad(years)}:${pad(months)}:${pad(days)}`;
     },

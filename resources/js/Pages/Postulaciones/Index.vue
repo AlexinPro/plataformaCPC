@@ -43,6 +43,7 @@ watchEffect(() => {
   }
 })
 
+//funciones para mostrar estatus con colores y formatear fechas
 const estatusClass = (estatus) => {
   if (estatus === 'pendiente') return 'bg-yellow-100 text-yellow-800'
   if (estatus === 'aprobada') return 'bg-green-100 text-green-800'
@@ -64,7 +65,7 @@ const formatearFecha = (fecha) => {
   return `${day}/${month}/${year}`
 }
 
-/* EXPORTAR EXCEL */
+//EXPORTAR EXCEL
 function exportarPostulacionesExcel() {
   const tabla = document.querySelector('#tabla-postulaciones-excel')
   if (!tabla) return

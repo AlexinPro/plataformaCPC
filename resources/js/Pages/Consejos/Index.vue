@@ -8,6 +8,7 @@ defineProps({
   origen: String,
 })
 
+//Iconos importados desde Google Fonts
 const PetsIcon = defineComponent({
   name: 'PetsIcon',
   render() {

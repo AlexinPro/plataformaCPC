@@ -59,7 +59,8 @@ const aprobar = (id) => {
     }
 
   }).then(result => {
-
+ 
+    //control de fujo, si el usuario cancela no se ejecuta el código siguiente
     if (!result.isConfirmed) return
 
     const formData = new FormData()
@@ -110,16 +111,13 @@ const rechazar = (id) => {
     formData.append('acta_resolucion', result.value.archivo)
 
     router.post(route('postulaciones.rechazar', id), formData)
-
   })
-
 }
+
+
 </script>
-
 <template>
-
   <AuthenticatedLayout>
-
     <template #header>
       <h2 class="text-xl font-semibold">
         Panel de Validación

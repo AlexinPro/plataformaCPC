@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
   consejo: Object,
-  sesiones: Array, // [{ fecha, tipo_sesion, evidencia }]
+  sesiones: Array, //fecha, tipo_sesion, evidencia 
 })
 </script>
 
@@ -17,7 +17,7 @@ const props = defineProps({
         Pases de lista – {{ consejo.nombre }}
       </h1>
 
-      <!-- Volver -->
+      <!-- Enlace para volver -->
       <div class="mt-6">
         <Link :href="route('asistencias.index', consejo.id)" 
         class="text-gray-600 hover:underline">

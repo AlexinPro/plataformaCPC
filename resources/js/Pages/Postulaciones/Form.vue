@@ -59,7 +59,7 @@ const submit = () => {
 
           <div>
             <label class="block text-sm font-medium text-gray-700">
-              Nombre
+              Nombre(s)
             </label>
 
             <input v-model="form.nombre" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
@@ -129,7 +129,6 @@ const submit = () => {
 
 
         <!-- Expediente -->
-
         <div class="border-t pt-4">
 
           <h4 class="font-semibold text-gray-700 mb-3">
@@ -139,7 +138,6 @@ const submit = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <!-- INE -->
-
             <div>
               <label class="text-sm">INE</label>
 
@@ -151,9 +149,7 @@ const submit = () => {
               </div>
             </div>
 
-
             <!-- Comprobante -->
-
             <div>
               <label class="text-sm">
                 Comprobante domiciliario
@@ -167,9 +163,7 @@ const submit = () => {
               </div>
             </div>
 
-
-            <!-- Bajo protesta -->
-
+            <!-- Carta de "protesta" -->
             <div>
               <label class="text-sm">
                 Bajo protesta art. 170
@@ -183,9 +177,7 @@ const submit = () => {
               </div>
             </div>
 
-
             <!-- Integración fórmula -->
-
             <div>
               <label class="text-sm">
                 Integración de fórmula
@@ -198,6 +190,7 @@ const submit = () => {
                 {{ form.errors['documentos.integracion_formula'] }}
               </div>
             </div>
+            
             <!-- CV -->
             <div>
               <label class="text-sm">
@@ -212,8 +205,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Carta motivos -->
-
+            <!-- Carta de "motivos" -->
             <div>
               <label class="text-sm">
                 Carta de motivos
@@ -228,7 +220,6 @@ const submit = () => {
             </div>
 
             <!-- Cumplimiento normatividad -->
-
             <div>
               <label class="text-sm">
                 Cumplimiento de normatividad
@@ -242,13 +233,10 @@ const submit = () => {
                 {{ form.errors['documentos.cumplimiento_normatividad'] }}
               </div>
             </div>
-
           </div>
-
         </div>
-
+        
         <!-- Botones -->
-
         <div class="flex justify-end space-x-2 pt-4">
 
           <button type="button" @click="emit('close')" class="px-4 py-2 bg-gray-300 rounded-md">

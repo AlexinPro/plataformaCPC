@@ -9,6 +9,7 @@ use Inertia\Inertia;
 
 class ConsejoController extends Controller
 {
+    //se reutiliza la vista de consejos para cada módulo
     public function index()
     {
         $origen = request()->routeIs('consejos.convocatorias')
@@ -23,6 +24,7 @@ class ConsejoController extends Controller
 
         $consejos = Consejo::all();
 
+        //este es el origen de la vista de los consejos
         return inertia('Consejos/Index', [
             'consejos' => $consejos,
             'origen' => $origen,

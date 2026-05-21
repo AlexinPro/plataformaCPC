@@ -11,10 +11,7 @@ use App\Models\IntegranteBaja;
 
 class ReporteController extends Controller
 {
-    /**
-     * LISTA DE CONSEJOS
-     * /reportes
-     */
+    //lista de consejos para elegir el reporte
     public function index()
     {
         $consejos = Consejo::orderBy('nombre')->get(['id', 'nombre']);
@@ -24,10 +21,7 @@ class ReporteController extends Controller
         ]);
     }
 
-    /**
-     * REPORTES DE UN CONSEJO
-     * /consejos/{consejo}/reportes
-     */
+    //Reporte detallado de un consejo específico
     public function show(Consejo $consejo)
     {
         // ================= CONVOCATORIAS =================
@@ -55,7 +49,7 @@ class ReporteController extends Controller
                     'tipo_sesion' => $a->tipo_sesion,
                     'estado' => $a->estado,
 
-                    // 👇 Mantenemos tu simbología pero SIN perder los datos originales
+                    //Persistencia de simbología sin perder los datos originales
                     'simbolo' => match ($a->estado) {
                         'asistio' => 'A',
                         'justificada' => 'IJ',
@@ -64,12 +58,12 @@ class ReporteController extends Controller
                 ];
             });
 
-        // ================= INTEGRANTES =================
+        // Integrantes
         $integrantes = $consejo->integrantes()
             ->with('documentos:id,integrante_id,tipo,archivo')
             ->get(['id', 'nombre', 'apellido']);
 
-        // ================= BAJAS =================
+        // Bajas
         $bajas = IntegranteBaja::where('consejo_id', $consejo->id)
             ->orderBy('fecha_baja', 'desc')
             ->get([
@@ -82,7 +76,7 @@ class ReporteController extends Controller
                 'evidencia_pdf',
             ]);
 
-        // ================= REPORTE ASISTENCIAS
+        // Reporte de asistencias por integrante
         $reporteAsistencias = $integrantes->map(function ($integrante) use ($asistencias) {
 
             $asistenciasIntegrante = $asistencias
@@ -112,7 +106,7 @@ class ReporteController extends Controller
             ];
         })->values();
 
-        // ================= VALIDAR DATOS =================
+        //validacion de datos para mostrar mensaje de "no hay datos" en la vista
         $hayDatos =
             $convocatorias->isNotEmpty() ||
             $asistencias->isNotEmpty() ||

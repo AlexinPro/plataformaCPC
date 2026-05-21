@@ -12,12 +12,12 @@ class IntegranteBajaController extends Controller
 {
     public function store(Request $request, Integrante $integrante)
     {
-        // Validar motivo primero
+        //Validar motivo primero
         $request->validate([
             'motivo' => 'required|in:inasistencia,sancion,fin_periodo,renuncia,error_registro',
         ]);
 
-        // Si es error de registro → solo eliminar
+        //Si es error de registro, solo eliminar
         if ($request->motivo === 'error_registro') {
             $integrante->delete();
 
@@ -26,7 +26,7 @@ class IntegranteBajaController extends Controller
                 ->with('success', 'Integrante eliminado por error de registro.');
         }
 
-        // Validación para bajas reales
+        //Validación para bajas reales
         $request->validate([
             'fecha_baja' => 'required|date',
             'evidencia_pdf' => 'required|file|mimes:pdf|max:5120',

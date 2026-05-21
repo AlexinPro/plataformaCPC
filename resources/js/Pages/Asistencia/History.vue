@@ -28,9 +28,7 @@ function claseEstado(estado) {
   }
 }
 
-/* ===============================
-   EXPORTAR A EXCEL (REAL)
-================================= */
+// export a excel
 function exportarExcel() {
 
   const data = props.historial.map(h => ({

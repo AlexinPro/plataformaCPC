@@ -19,31 +19,25 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'saved'])
 
-/* =========================
-   Estado del formulario
-========================= */
+//Estado del formulario
 const form = ref({
   fecha: props.fecha,
   tipo_sesion: '',
   asistencias: props.integrantes.map(i => ({
     integrante_id: i.id,
-    estado: 'asistio', // 👈 valor por defecto
+    estado: 'asistio', //valor por defecto
   })),
 })
 
 const evidencia = ref(null)
 const errorArchivo = ref('')
 
-/* =========================
-   Sincronizar fecha
-========================= */
+//Sincronizar fecha si cambia desde el formulario padre
 watch(() => props.fecha, (value) => {
   form.value.fecha = value
 })
 
-/* =========================
-   Manejo de archivo (PDF)
-========================= */
+//Validación del archivo PDF
 function onFileChange(e) {
   const file = e.target.files[0]
 
@@ -63,9 +57,7 @@ function onFileChange(e) {
   evidencia.value = file
 }
 
-/* =========================
-   Envío del formulario
-========================= */
+// enviar formulario, se cierra solito al final
 function submitForm() {
   const formData = new FormData()
 
@@ -89,7 +81,7 @@ function submitForm() {
       preserveScroll: true,
       onSuccess: () => {
         emit('saved')
-        emit('close') // ✅ cerrar modal
+        emit('close')//cerrar modal
       },
     }
   )
@@ -111,8 +103,7 @@ function submitForm() {
           type="date"
           v-model="form.fecha"
           readonly
-          class="w-full border rounded px-3 py-2 bg-gray-100"
-        />
+          class="w-full border rounded px-3 py-2 bg-gray-100"/>
       </div>
 
       <!-- TIPO DE SESIÓN -->
@@ -120,8 +111,7 @@ function submitForm() {
         <label class="block text-sm font-medium mb-1">Tipo de sesión</label>
         <select
           v-model="form.tipo_sesion"
-          class="w-full border rounded px-3 py-2"
-        >
+          class="w-full border rounded px-3 py-2">
           <option disabled value="">Seleccione tipo</option>
           <option value="ordinaria">Ordinaria</option>
           <option value="solemne">Solemne</option>
@@ -136,8 +126,7 @@ function submitForm() {
         <div
           v-for="(i, index) in integrantes"
           :key="i.id"
-          class="py-2 border-b last:border-b-0"
-        >
+          class="py-2 border-b last:border-b-0">
           <p class="text-sm font-semibold mb-1">
             {{ i.nombre }} {{ i.apellido }}
           </p>
@@ -148,8 +137,7 @@ function submitForm() {
                 type="radio"
                 :name="`estado-${i.id}`"
                 value="asistio"
-                v-model="form.asistencias[index].estado"
-              />
+                v-model="form.asistencias[index].estado"/>
               Asistió
             </label>
 
@@ -158,8 +146,7 @@ function submitForm() {
                 type="radio"
                 :name="`estado-${i.id}`"
                 value="falto"
-                v-model="form.asistencias[index].estado"
-              />
+                v-model="form.asistencias[index].estado"/>
               Faltó
             </label>
 
@@ -168,8 +155,7 @@ function submitForm() {
                 type="radio"
                 :name="`estado-${i.id}`"
                 value="justificada"
-                v-model="form.asistencias[index].estado"
-              />
+                v-model="form.asistencias[index].estado"/>
               Justificada
             </label>
           </div>
@@ -185,8 +171,7 @@ function submitForm() {
           type="file"
           accept="application/pdf"
           @change="onFileChange"
-          class="w-full border rounded px-3 py-2"
-        />
+          class="w-full border rounded px-3 py-2"/>
 
         <p v-if="errorArchivo" class="text-red-500 text-sm mt-1">
           {{ errorArchivo }}
@@ -198,8 +183,7 @@ function submitForm() {
         <button
           type="button"
           class="px-4 py-2 bg-gray-300 rounded"
-          @click="$emit('close')"
-        >
+          @click="$emit('close')">
           Cancelar
         </button>
 
@@ -207,8 +191,7 @@ function submitForm() {
           type="button"
           class="px-4 py-2 bg-gray-700 text-white rounded"
           :disabled="!form.tipo_sesion"
-          @click="submitForm"
-        >
+          @click="submitForm">
           Guardar asistencia
         </button>
       </div>

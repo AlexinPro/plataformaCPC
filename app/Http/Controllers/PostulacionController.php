@@ -110,7 +110,7 @@ class PostulacionController extends Controller
             $nombre = 'acta_' . $postulacion->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
             $ruta = $archivo->storeAs('resoluciones', $nombre, 'public');
 
-            /* CREAR INTEGRANTE */
+            //CREAR INTEGRANTE una vez aprobada la postulación
 
             $integrante = Integrante::create([
                 'nombre' => $postulacion->nombre,
@@ -124,7 +124,7 @@ class PostulacionController extends Controller
                 'consejo_id' => $postulacion->consejo_id,
             ]);
 
-            /* COPIAR DOCUMENTOS DE POSTULACION A DOCU */
+            // Copiar documentos de la postulación al nuevo integrante
 
             foreach ($postulacion->documentos as $doc) {
                 Docu::create([
@@ -134,7 +134,7 @@ class PostulacionController extends Controller
                 ]);
             }
 
-            /* CREAR PERIODO EN LEGALIDAD */
+            // Crear registro de legalidad para el nuevo integrante
             Legalidad::create([
                 'consejo_id' => $postulacion->consejo_id,
                 'integrante_id' => $integrante->id,
@@ -150,7 +150,7 @@ class PostulacionController extends Controller
                 'ya_reelegido' => false
             ]);
 
-            /* ACTUALIZAR POSTULACION */
+            // ACTUALIZAR POSTULACION
 
             $postulacion->update([
                 'estatus' => 'aprobada',

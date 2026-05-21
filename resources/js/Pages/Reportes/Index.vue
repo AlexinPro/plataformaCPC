@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import { ArrowDownTrayIcon } from '@heroicons/vue/24/solid'
 
-// ================= PROPS =================
+//props para recibir datos desde el controlador
 const props = defineProps({
   consejo: Object,
   convocatorias: Array,
@@ -17,7 +17,7 @@ const props = defineProps({
 
 const tipoReporte = ref('')
 
-// ================= AÑOS =================
+//años para filtro
 const year = ['2025', '2026', '2027', '2028', '2029']
 const anioSeleccionado = ref(year[0])
 
@@ -25,7 +25,7 @@ function obtenerAnio(fecha) {
   return new Date(fecha).getFullYear().toString()
 }
 
-// ================= DOCUMENTOS =================
+// documentos
 const tiposDocumentos = [
   { label: 'INE', key: 'ine' },
   { label: 'Comprobante domiciliario', key: 'comprobante_domiciliario' },
@@ -41,7 +41,7 @@ function tieneDocumento(integrante, key) {
   return integrante.documentos.some(doc => doc.tipo === key)
 }
 
-// ================= FECHAS =================
+// fechas
 function formatearFecha(fecha) {
   if (!fecha) return '-'
   if (fecha.includes('T')) {
@@ -55,7 +55,6 @@ function formatearFecha(fecha) {
   return fecha
 }
 
-// ================= MESES =================
 const meses = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -65,7 +64,7 @@ function obtenerMes(fecha) {
   return meses[new Date(fecha).getMonth()]
 }
 
-// ================= CONVOCATORIAS =================
+// sección para pivotear convocatorias por tipo de sesión y mes
 const tiposSesion = ['ordinaria', 'solemne', 'extraordinaria']
 
 const convocatoriasFiltradas = computed(() =>
@@ -93,7 +92,7 @@ const tablaConvocatoriasPivot = computed(() => {
   return estructura
 })
 
-// ================= ASISTENCIAS (FILTRADAS POR AÑO) =================
+// asistencias filtradas por año 
 const asistenciasFiltradas = computed(() =>
   props.asistencias.filter(a =>
     obtenerAnio(a.fecha) === anioSeleccionado.value
@@ -137,7 +136,7 @@ const asistenciasExcel = computed(() => {
 })
 
 
-// ================= BAJAS =================
+// baas
 function obtenerNombreArchivo(ruta) {
   if (!ruta) return '-'
   return ruta.split('/').pop()
@@ -148,7 +147,7 @@ function obtenerUrlPublica(ruta) {
   return `/storage/${ruta}`
 }
 
-// ================= EXPORTACIONES =================
+// exports
 function exportarConvocatoriasExcel() {
   const tabla = document.querySelector('#tabla-convocatorias-pivot')
   if (!tabla) return
@@ -232,7 +231,7 @@ function exportarAsistenciasExcel() {
           </select>
         </div>
 
-        <!-- ================= CONVOCATORIAS ================= -->
+        <!-- CONVOCATORIAS -->
         <div v-if="tipoReporte === 'convocatorias'">
           <h2 class="text-lg font-semibold mb-4">Convocatorias por Mes</h2>
 
@@ -273,7 +272,7 @@ function exportarAsistenciasExcel() {
           </div>
         </div>
 
-        <!-- ================= ASISTENCIAS ================= -->
+        <!-- ASISTENCIAS -->
         <div v-if="tipoReporte === 'asistencias'">
           <h2 class="text-lg font-semibold mb-4">
             Reporte de Asistencias (Formato Excel)
@@ -338,7 +337,7 @@ function exportarAsistenciasExcel() {
           </div>
         </div>
 
-        <!-- ================= DOCUMENTOS ================= -->
+        <!-- DOCUMENTOS  -->
         <div v-if="tipoReporte === 'documentos'">
           <h2 class="text-lg font-semibold mb-2">Checklist de Documentos</h2>
 
@@ -371,7 +370,7 @@ function exportarAsistenciasExcel() {
           </div>
         </div>
 
-        <!-- ================= BAJAS ================= -->
+        <!-- BAJAS-->
         <div v-if="tipoReporte === 'bajas'">
           <h2 class="text-lg font-semibold mb-4">Integrantes dados de baja</h2>
 

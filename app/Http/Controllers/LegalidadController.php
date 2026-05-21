@@ -71,9 +71,7 @@ class LegalidadController extends Controller
         return back()->with('success', 'Periodo registrado correctamente.');
     }
 
-    /* =========================
-       FASE 1: SOLICITAR REELECCIÓN
-    ========================= */
+    // Solicitar reelección (fase 1)
     public function solicitarReeleccion(Request $request, Legalidad $legalidad)
     {
         $request->validate([
@@ -100,9 +98,7 @@ class LegalidadController extends Controller
         return back()->with('success', 'Solicitud enviada para validación.');
     }
 
-    /* =========================
-       FASE 2: APROBAR REELECCIÓN
-    ========================= */
+    // Aprobar reelección (fase 2)
     public function aprobarReeleccion(Legalidad $legalidad)
     {
         if ($legalidad->ya_reelegido) {
@@ -126,9 +122,7 @@ class LegalidadController extends Controller
     }
     
 
-    /* =========================
-       FASE 2: RECHAZAR REELECCIÓN
-    ========================= */
+    // Rechazar reelección (fase 2)
     public function rechazarReeleccion(Legalidad $legalidad)
     {
         $legalidad->update([

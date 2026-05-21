@@ -16,7 +16,7 @@ const props = defineProps({
   integrante: Object,
 })
 
-/* ================= SWEET ALERT ================= */
+// Sweet alert para mostrar mensajes flash
 const page = usePage()
 
 watch(
@@ -37,7 +37,7 @@ watch(
   { immediate: true }
 )
 
-/* ================= FORM DOCUMENTOS ================= */
+// Form documuentos
 const form = useForm({
   ine: null,
   comprobante_domiciliario: null,
@@ -60,7 +60,7 @@ const submitForm = () => {
   })
 }
 
-/* ================= HELPERS ================= */
+// Helpers para manejar documentos existentes y nombres de archivos
 const getDoc = (tipo) =>
   props.integrante.documentos.find((d) => d.tipo === tipo)
 
@@ -84,6 +84,7 @@ const documentos = [
   { key: 'cumplimiento_normatividad', label: 'Cumplimiento de normatividad' },
 ]
 
+//maneja la selección de archivos para cada documento 
 const handleFileSelect = (event, key) => {
   const file = event.target.files[0]
   if (file) {

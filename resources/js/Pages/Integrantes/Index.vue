@@ -15,7 +15,7 @@ const props = defineProps({
 const showForm = ref(false)
 const editingId = ref(null)
 
-/* ---------- EDITAR DESCRIPCIÓN CONSEJO ---------- */
+//editar descripción del consejo
 const showDescripcionModal = ref(false)
 
 const descripcionForm = useForm({
@@ -38,7 +38,7 @@ function submitDescripcion() {
   )
 }
 
-/* ---------- FORM INTEGRANTE ---------- */
+//form para agregar/editar integrantes
 const form = useForm({
   nombre: '',
   apellido: '',
@@ -109,7 +109,7 @@ function submitForm() {
   }
 }
 
-/* ---------- BAJA / ELIMINACIÓN ---------- */
+// BAJA / ELIMINACIÓN
 const showDeleteModal = ref(false)
 const integranteAEliminar = ref(null)
 
@@ -163,7 +163,7 @@ function confirmarEliminacion() {
   })
 }
 
-/* ---------- AGRUPAR FÓRMULAS ---------- */
+//agupar integrantes por fórmula
 const formulas = computed(() => { 
 
  const grouped = {} 
@@ -178,7 +178,7 @@ const formulas = computed(() => {
       .sort((a,b) => Number(a[0]) - Number(b[0])) 
 })
 
-/* ---------- SEMÁFORO DOCUMENTOS ---------- */
+//semaforización de documentos
 const getSemaforoClase = (integrante) => {
   const total = integrante?.documentos?.length || 0
   if (total === 0) return 'bg-red-500'
