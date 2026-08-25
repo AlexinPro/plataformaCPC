@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Controllers
@@ -28,7 +29,7 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Dashboard');
+    return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
 Route::get('/about', fn() => Inertia::render('About'))
@@ -67,6 +68,7 @@ Route::middleware('auth')->group(function () {
     */
     Route::get('/consejos/asistencias', [ConsejoController::class, 'index'])
         ->name('consejos.asistencias');
+
 
     Route::get('/asistencias/{consejo}', [AsistenciaController::class, 'index'])
         ->name('asistencias.index');
@@ -271,4 +273,10 @@ Route::middleware('auth')->group(function () {
 | Autenticación
 |--------------------------------------------------------------------------
 */
+Route::get('/session/check', function (){
+    return response()->json([
+        'authenticated' => Auth::check(),
+    ]);
+})->name('session.check');
+
 require __DIR__ . '/auth.php';

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('archivo'); // ruta del archivo almacenado
             $table->unique(['integrante_id', 'tipo']); // Evita duplicados por tipo
 
-            $table->string('tipo');
+            //$table->string('tipo');
             $table->string('ruta')->nullable();
             $table->timestamps();
         });

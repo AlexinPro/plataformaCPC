@@ -3,9 +3,10 @@ import Navigation from './Navigation.vue'
 import TopMenu from "./TopMenu.vue"
 import NavigationMobile from './NavigationMobile.vue'
 import PrivacyModal from '@/Components/PrivacyModal.vue'
-import { usePage } from '@inertiajs/vue3'
+import { usePage, router } from '@inertiajs/vue3'
 
 const page = usePage()
+
 
 </script>
 

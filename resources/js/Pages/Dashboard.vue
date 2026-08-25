@@ -5,7 +5,6 @@ import BarChart from '@/Components/Charts/BarChart.vue'
 import BarGroupedChart from '@/Components/Charts/BarGroupedChart.vue'
 import PieChart from '@/Components/Charts/PieChart.vue';
 
-
 const props = defineProps({
   labels: Array,
   data: Array,
@@ -46,12 +45,22 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
 
 <template>
   <AuthenticatedLayout>
-
     <Head title="Dashboard" />
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h1 class="text-2xl font-bold">Instituto Municipal de Planeación de Puebla</h1> <br>
-      <h2 class="text-lg text-gray-600">Tablero de estadísticas.</h2>
-    </div>
+
+     <div class="bg-white rounded-xl shadow-md p-6">
+     <div class="flex items-center gap-6">
+        <img
+            src="/images/logo-implan.png" class="w-60 h-auto object-contain">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                Instituto Municipal de Planeación de Puebla
+            </h1>
+            <p class="mt-5 text-gray-500">
+                Tablero de estadísticas
+            </p>
+         </div>
+       </div>
+     </div>
 
     <div class="px-6 py-8 space-y-10">
 
