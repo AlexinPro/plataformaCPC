@@ -40,6 +40,7 @@ class PostulacionController extends Controller
             'correo'     => 'required|email|max:255',
             'consejo_id' => 'required|exists:consejos,id',
             'puesto'     => 'required|string|max:255',
+            'formula'    => 'required|integer|min:1',
         ];
 
         foreach (Postulacion::TIPOS_DOCUMENTOS as $tipo) {
@@ -56,6 +57,7 @@ class PostulacionController extends Controller
                 'correo'            => $request->correo,
                 'consejo_id'        => $request->consejo_id,
                 'puesto'            => $request->puesto,
+                'formula'           => $request->formula,
                 'estatus'           => 'pendiente',
                 'fecha_postulacion' => now(),
             ]);
@@ -122,6 +124,7 @@ class PostulacionController extends Controller
                 'discapacidad' => null,
                 'discapacidad_tipo' => null,
                 'consejo_id' => $postulacion->consejo_id,
+                'formula' => $postulacion->formula + 1,
             ]);
 
             // Copiar documentos de la postulación al nuevo integrante

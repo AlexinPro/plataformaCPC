@@ -151,10 +151,10 @@ watch(
                 </div>
                 <!-- BOTONES -->
                 <div class="flex justify-end space-x-2">
-                    <button type="button" @click="$emit('close')" class="px-4 py-2 bg-gray-300 rounded">
+                    <button type="button" @click="$emit('close')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-800">
                         Cancelar
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-black">
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-800">
                         Guardar
                     </button>
                 </div>

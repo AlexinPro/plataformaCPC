@@ -16,6 +16,7 @@ const form = useForm({
   'correo': '',
   puesto: '',
   consejo_id: '',
+  formula: '',
   documentos: {
     ine: null,
     comprobante_domiciliario: null,
@@ -54,35 +55,31 @@ const submit = () => {
       <form @submit.prevent="submit" class="space-y-6">
 
         <!-- Datos personales -->
-
+        <!-- Nombre -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Nombre(s)
             </label>
-
             <input v-model="form.nombre" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-
             <div v-if="form.errors.nombre" class="text-red-500 text-sm">
               {{ form.errors.nombre }}
             </div>
           </div>
 
-
+          <!-- Apellidos -->
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Apellidos
             </label>
-
             <input v-model="form.apellidos" type="text"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-
             <div v-if="form.errors.apellidos" class="text-red-500 text-sm">
               {{ form.errors.apellidos }}
             </div>
           </div>
 
+          <!-- Correo -->
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Correo electrónico
@@ -93,41 +90,45 @@ const submit = () => {
             </div>
           </div>
 
+          <!-- Cargo -->
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Cargo
             </label>
-
             <input v-model="form.puesto" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-
             <div v-if="form.errors.puesto" class="text-red-500 text-sm">
               {{ form.errors.puesto }}
             </div>
           </div>
 
-
+          <!-- Consejo -->
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Consejo
             </label>
-
             <select v-model="form.consejo_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
               <option value="">Seleccione un consejo</option>
-
               <option v-for="c in props.consejos" :key="c.id" :value="c.id">
                 {{ c.nombre }}
               </option>
-
             </select>
-
             <div v-if="form.errors.consejo_id" class="text-red-500 text-sm">
               {{ form.errors.consejo_id }}
             </div>
           </div>
 
+           <!-- Formula -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700">
+                Fórmula
+              </label>
+              <input v-model="form.formula" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+              <div v-if="form.errors.formula" class="text-red-500 text-sm">
+                {{ form.errors.formula }}
+              </div>
+            </div>
+
         </div>
-
-
         <!-- Expediente -->
         <div class="border-t pt-4">
 

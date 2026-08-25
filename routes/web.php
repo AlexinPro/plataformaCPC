@@ -4,11 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
-/*
-|--------------------------------------------------------------------------
-| Controllers
-|--------------------------------------------------------------------------
-*/
+
+//Controllers
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ConsejoController;
 use App\Http\Controllers\ConvocatoriaController;
@@ -22,12 +19,7 @@ use App\Http\Controllers\PostulacionController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\UserController;
 
-/*
-|--------------------------------------------------------------------------
-| Rutas públicas
-|--------------------------------------------------------------------------
-*/
-
+//public routes
 Route::get('/', function () {
     return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
@@ -35,20 +27,12 @@ Route::get('/', function () {
 Route::get('/about', fn() => Inertia::render('About'))
     ->name('about');
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard protegido
-|--------------------------------------------------------------------------
-*/
+//Dashboard protegido
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| Rutas protegidas
-|--------------------------------------------------------------------------
-*/
+//
 Route::middleware('auth')->group(function () {
 
     //RUTA PARA AVISO DE PRIVACIDAD
@@ -61,11 +45,7 @@ Route::middleware('auth')->group(function () {
     return back();
     })->name('privacy.accept');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ASISTENCIAS (consulta)
-    |--------------------------------------------------------------------------
-    */
+    //ASISTENCIAS (consulta)
     Route::get('/consejos/asistencias', [ConsejoController::class, 'index'])
         ->name('consejos.asistencias');
 
@@ -87,11 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/consejos/{consejo}/evidencias', [AsistenciaController::class, 'evidencias'])
         ->name('asistencias.evidencias');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ASISTENCIAS (registro)
-    |--------------------------------------------------------------------------
-    */
+    //ASISTENCIAS (registro)
     Route::middleware('permission:convocatorias.crear')->group(function () {
 
         Route::get('/consejos/{consejo}/asistencias/create', [AsistenciaController::class, 'create'])
@@ -106,11 +82,7 @@ Route::middleware('auth')->group(function () {
         )->name('asistencias.sesion.store');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | CONSEJOS (consulta y edición )
-    |--------------------------------------------------------------------------
-    */
+    //CONSEJOS (consulta y edición )
     Route::get('/consejos', [ConsejoController::class, 'index'])
         ->name('consejos.index');
 
@@ -126,11 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/consejos/{consejo}/descripcion', [ConsejoController::class, 'updateDescripcion'])
         ->name('consejos.descripcion.update');
 
-    /*
-    |--------------------------------------------------------------------------
-    | CONVOCATORIAS
-    |--------------------------------------------------------------------------
-    */
+    // Convocatorias
     Route::get('/convocatorias/{consejo}', [ConvocatoriaController::class, 'index'])
         ->name('convocatorias.index');
 
@@ -146,11 +114,7 @@ Route::middleware('auth')->group(function () {
             ->name('convocatorias.subir');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | DOCUMENTOS
-    |--------------------------------------------------------------------------
-    */
+    //Documentos de integrantes
     Route::get('/documentos/{integrante}', [DocuController::class, 'index'])
         ->name('docu.index');
 
@@ -166,11 +130,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/documento/ver/{id}', [DocuController::class, 'show'])
         ->name('docu.show');
 
-    /*
-    |--------------------------------------------------------------------------
-    | INTEGRANTES
-    |--------------------------------------------------------------------------
-    */
+    //Integrantes
     Route::middleware('permission:usuarios.editar')->group(function () {
 
         Route::resource('integrantes', IntegranteController::class);
@@ -182,11 +142,7 @@ Route::middleware('auth')->group(function () {
             ->name('integrantes.baja');
     });
 
-    /*
-|--------------------------------------------------------------------------
-| LEGALIDAD Y REPORTES
-|--------------------------------------------------------------------------
-*/
+    //Legalidad (periodo en el cargo) y documentos de reelección
     Route::middleware('permission:legalidad.ver')->group(function () {
 
         // ======= LEGALIDAD (USUARIOS NORMALES Y ADMIN) =======
@@ -242,22 +198,14 @@ Route::middleware('auth')->group(function () {
             ->name('reportes.consejo');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | USUARIOS
-    |--------------------------------------------------------------------------
-    */
+    //Usuarios
     Route::middleware('permission:usuarios.crear')->group(function () {
 
         Route::get('/users', [UserController::class, 'index'])
             ->name('users.index');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | PERFIL
-    |--------------------------------------------------------------------------
-    */
+    //perfil
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
@@ -268,11 +216,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Autenticación
-|--------------------------------------------------------------------------
-*/
+//Auth
 Route::get('/session/check', function (){
     return response()->json([
         'authenticated' => Auth::check(),
