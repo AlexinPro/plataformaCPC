@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5cb0188c522af48fc943a0680b0d98af",
+    "content-hash": "61574059e6c36edcea026e3fbcc51772",
     "packages": [
         {
             "name": "brick/math",
@@ -6608,54 +6608,6 @@
             "time": "2025-08-25T19:28:31+00:00"
         },
         {
-            "name": "laraveldaily/larastarters",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LaravelDaily/Larastarters.git",
-                "reference": "59bda66b997ce1aa499aeac4d7236ba7806345f1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LaravelDaily/Larastarters/zipball/59bda66b997ce1aa499aeac4d7236ba7806345f1",
-                "reference": "59bda66b997ce1aa499aeac4d7236ba7806345f1",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/filesystem": "^11.0",
-                "php": "^8.2.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "LaravelDaily\\Larastarters\\LarastartersServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "LaravelDaily\\Larastarters\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Povilas Korop",
-                    "email": "povilas@laraveldaily.com"
-                }
-            ],
-            "description": "Laravel Starter Kits with extra functions",
-            "support": {
-                "issues": "https://github.com/LaravelDaily/Larastarters/issues",
-                "source": "https://github.com/LaravelDaily/Larastarters/tree/3.0.0"
-            },
-            "time": "2024-03-18T05:36:46+00:00"
-        },
-        {
             "name": "mockery/mockery",
             "version": "1.6.12",
             "source": {
@@ -8614,12 +8566,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }
