@@ -13,18 +13,11 @@ class RolePermissionSeeder extends Seeder
         |--------------------------------------------------------------------------
         | SUPER ADMIN
         |--------------------------------------------------------------------------
-        | No se asignan permisos explícitos.
-        | Tiene acceso total vía Gate::before
+        | No requiere permisos explícitos.
+        | Tiene acceso total mediante Gate::before.
         */
         $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-
-        $superAdmin->syncPermissions([
-            //legalidad
-            'legalidad.ver',
-            'legalidad.validar_reeleccion',
-            'legalidad.rechazar_reeleccion',
-        ]);
-
+        $superAdmin->syncPermissions([]);
 
         /*
         |--------------------------------------------------------------------------
@@ -45,7 +38,6 @@ class RolePermissionSeeder extends Seeder
             'usuarios.editar',
             'convocatorias.crear',
             'asistencias.crear',
-            
 
             // Documentos
             'documentos.subir',
