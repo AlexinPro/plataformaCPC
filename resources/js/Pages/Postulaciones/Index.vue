@@ -114,7 +114,7 @@ function exportarPostulacionesExcel() {
             Exportar Excel
           </button>
 
-          <button @click="showModal = true" class="px-4 py-2 text-white rounded-md" style="background-color:#636569;">
+          <button @click="showModal = true" class="px-4 py-2 text-white rounded-md" style="background-color:#1E520B;">
             Nueva postulación
           </button>
         </div>

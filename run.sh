@@ -192,7 +192,6 @@ while true; do
 
         4)
             print_text ""
-            print_text "Hasta luego." "$GREEN"
             exit 0
             ;;
 
