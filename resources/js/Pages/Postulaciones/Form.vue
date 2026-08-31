@@ -1,8 +1,13 @@
 <script setup>
+import { computed, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
   consejos: {
+    type: Array,
+    default: () => []
+  },
+  formulasOcupadas: {
     type: Array,
     default: () => []
   }
@@ -13,7 +18,7 @@ const emit = defineEmits(['close'])
 const form = useForm({
   nombre: '',
   apellidos: '',
-  'correo': '',
+  correo: '',
   puesto: '',
   consejo_id: '',
   formula: '',
@@ -28,9 +33,45 @@ const form = useForm({
   }
 })
 
+//manejo de fórmulas disponibles
+const formulasDisponibles = computed(() => {
+  if (!form.consejo_id) {
+    return []
+  }
+
+  const formulas = Array.from(
+    { length: 15 },
+    (_, index) => index + 1
+  )
+
+  const ocupacionConsejo =
+    props.formulasOcupadas[form.consejo_id] ?? []
+
+  return formulas.filter(numeroFormula => {
+    const formulaEncontrada = ocupacionConsejo.find(
+      item => Number(item.formula) === Number(numeroFormula)
+    )
+
+    if (!formulaEncontrada) {
+      return true
+    }
+
+    return Number(formulaEncontrada.total) < 2
+  })
+})
+
+//limpia la fórmula al cambiar de consejo
+watch(
+  () => form.consejo_id,
+  () => {
+    form.formula = ''
+  }
+)
+
 const submit = () => {
   form.post(route('postulaciones.store'), {
     forceFormData: true,
+
     onSuccess: () => {
       form.reset()
       emit('close')
@@ -41,9 +82,7 @@ const submit = () => {
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-
     <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh]">
-
       <button type="button" @click="emit('close')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
         ✕
       </button>
@@ -55,13 +94,16 @@ const submit = () => {
       <form @submit.prevent="submit" class="space-y-6">
 
         <!-- Datos personales -->
-        <!-- Nombre -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- Nombre -->
           <div>
             <label class="block text-sm font-medium text-gray-700">
               Nombre(s)
             </label>
+
             <input v-model="form.nombre" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+
             <div v-if="form.errors.nombre" class="text-red-500 text-sm">
               {{ form.errors.nombre }}
             </div>
@@ -72,8 +114,10 @@ const submit = () => {
             <label class="block text-sm font-medium text-gray-700">
               Apellidos
             </label>
+
             <input v-model="form.apellidos" type="text"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+
             <div v-if="form.errors.apellidos" class="text-red-500 text-sm">
               {{ form.errors.apellidos }}
             </div>
@@ -84,7 +128,9 @@ const submit = () => {
             <label class="block text-sm font-medium text-gray-700">
               Correo electrónico
             </label>
-            <input v-model="form.correo" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"/>
+
+            <input v-model="form.correo" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+
             <div v-if="form.errors.correo" class="text-red-500 text-sm">
               {{ form.errors.correo }}
             </div>
@@ -95,7 +141,9 @@ const submit = () => {
             <label class="block text-sm font-medium text-gray-700">
               Cargo
             </label>
+
             <input v-model="form.puesto" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+
             <div v-if="form.errors.puesto" class="text-red-500 text-sm">
               {{ form.errors.puesto }}
             </div>
@@ -106,29 +154,50 @@ const submit = () => {
             <label class="block text-sm font-medium text-gray-700">
               Consejo
             </label>
+
             <select v-model="form.consejo_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">Seleccione un consejo</option>
+              <option value="">
+                Seleccione un consejo
+              </option>
+
               <option v-for="c in props.consejos" :key="c.id" :value="c.id">
                 {{ c.nombre }}
               </option>
             </select>
+
             <div v-if="form.errors.consejo_id" class="text-red-500 text-sm">
               {{ form.errors.consejo_id }}
             </div>
           </div>
 
-           <!-- Formula -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700">
-                Fórmula
-              </label>
-              <input v-model="form.formula" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-              <div v-if="form.errors.formula" class="text-red-500 text-sm">
-                {{ form.errors.formula }}
-              </div>
+          <!-- Fórmula -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Fórmula
+            </label>
+
+            <select v-model="form.formula" :disabled="!form.consejo_id"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100">
+              <option value="">
+                {{
+                  form.consejo_id
+                    ? 'Seleccione una fórmula'
+                    : 'Primero seleccione un consejo'
+                }}
+              </option>
+
+              <option v-for="formula in formulasDisponibles" :key="formula" :value="formula">
+                Fórmula {{ formula }}
+              </option>
+            </select>
+
+            <div v-if="form.errors.formula" class="text-red-500 text-sm">
+              {{ form.errors.formula }}
             </div>
+          </div>
 
         </div>
+
         <!-- Expediente -->
         <div class="border-t pt-4">
 
@@ -140,7 +209,9 @@ const submit = () => {
 
             <!-- INE -->
             <div>
-              <label class="text-sm">INE</label>
+              <label class="text-sm">
+                INE
+              </label>
 
               <input type="file" accept="application/pdf" @change="e => form.documentos.ine = e.target.files[0]"
                 class="block w-full mt-1" />
@@ -150,7 +221,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Comprobante -->
+            <!-- Comprobante domiciliario -->
             <div>
               <label class="text-sm">
                 Comprobante domiciliario
@@ -164,7 +235,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Carta de "protesta" -->
+            <!-- Bajo protesta -->
             <div>
               <label class="text-sm">
                 Bajo protesta art. 170
@@ -178,7 +249,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Integración fórmula -->
+            <!-- Integración de fórmula -->
             <div>
               <label class="text-sm">
                 Integración de fórmula
@@ -191,8 +262,8 @@ const submit = () => {
                 {{ form.errors['documentos.integracion_formula'] }}
               </div>
             </div>
-            
-            <!-- CV -->
+
+            <!-- Currículum vitae -->
             <div>
               <label class="text-sm">
                 Currículum Vitae
@@ -206,7 +277,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Carta de "motivos" -->
+            <!-- Carta de motivos -->
             <div>
               <label class="text-sm">
                 Carta de motivos
@@ -220,7 +291,7 @@ const submit = () => {
               </div>
             </div>
 
-            <!-- Cumplimiento normatividad -->
+            <!-- Cumplimiento de normatividad -->
             <div>
               <label class="text-sm">
                 Cumplimiento de normatividad
@@ -234,9 +305,10 @@ const submit = () => {
                 {{ form.errors['documentos.cumplimiento_normatividad'] }}
               </div>
             </div>
+
           </div>
         </div>
-        
+
         <!-- Botones -->
         <div class="flex justify-end space-x-2 pt-4">
 
@@ -245,9 +317,10 @@ const submit = () => {
           </button>
 
           <button type="submit" :disabled="form.processing"
-            class="px-4 py-2 bg-yellow-700 text-white rounded-md hover:bg-yellow-800">
+            class="px-4 py-2 bg-yellow-700 text-white rounded-md hover:bg-yellow-800 disabled:opacity-50">
             Guardar
           </button>
+
         </div>
       </form>
     </div>

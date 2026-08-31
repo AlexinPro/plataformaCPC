@@ -27,6 +27,7 @@ class Postulacion extends Model
         'correo',
         'consejo_id',
         'puesto',
+        'formula',
         //'documento',
         'acta_resolucion',
         'estatus',
@@ -36,6 +37,7 @@ class Postulacion extends Model
     ];
     
     protected $casts = [
+        'formula' => 'integer',
         'fecha_validacion' => 'datetime',
         'fecha_postulacion' => 'datetime',
     ];

@@ -52,6 +52,7 @@ services:
     working_dir: /var/www/html
     environment:
       DOCKER_ENV: "true"
+      CHOKIDAR_USEPOLLING: "true"
     volumes:
       - .:/var/www/html
       - node_modules:/var/www/html/node_modules

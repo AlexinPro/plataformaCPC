@@ -8,8 +8,18 @@ import Form from './Form.vue'
 const page = usePage()
 
 const props = defineProps({
-  postulaciones: { type: Array, default: () => [] },
-  consejos: { type: Array, default: () => [] }
+  postulaciones: {
+    type: Array,
+    default: () => []
+  },
+  consejos: {
+    type: Array,
+    default: () => []
+  },
+  formulasOcupadas: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
 const showModal = ref(false)
@@ -225,6 +235,7 @@ function exportarPostulacionesExcel() {
         </div>
       </div>
     </div>
-    <Form v-if="showModal" :consejos="consejos" @close="showModal = false" />
+    <Form
+  v-if="showModal":consejos="consejos":formulas-ocupadas="formulasOcupadas"@close="showModal = false"/>
   </AuthenticatedLayout>
 </template>

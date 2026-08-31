@@ -26,6 +26,12 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
 
+        //detectar cambios en código y recompilar
+        watch: {
+            usePolling: isDocker,
+            interval: isDocker ? 1000 : undefined,
+        },
+
         //Autorizar el cors de ambos origenes
         cors: {origin: isDocker
                 ? 'http://localhost:8082'

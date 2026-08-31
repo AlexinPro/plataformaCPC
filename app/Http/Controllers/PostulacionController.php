@@ -16,7 +16,6 @@ use Carbon\Carbon;
 
 class PostulacionController extends Controller
 {
-
     public function index()
     {
         $postulaciones = Postulacion::with('consejo', 'documentos')
@@ -25,22 +24,42 @@ class PostulacionController extends Controller
 
         $consejos = Consejo::orderBy('nombre')->get();
 
+        //obtiene la cantidad de integrantes registrados en cada fórmula por consejo
+        $formulasOcupadas = Integrante::select(
+            'consejo_id',
+            'formula',
+            DB::raw('COUNT(*) as total')
+        )
+            ->whereNotNull('formula')
+            ->whereBetween('formula', [1, 15])
+            ->groupBy('consejo_id', 'formula')
+            ->get()
+            ->groupBy('consejo_id')
+            ->map(function ($formulas) {
+                return $formulas->map(function ($formula) {
+                    return [
+                        'formula' => (int) $formula->formula,
+                        'total' => (int) $formula->total,
+                    ];
+                })->values();
+            });
+
         return Inertia::render('Postulaciones/Index', [
             'postulaciones' => $postulaciones,
             'consejos' => $consejos,
+            'formulasOcupadas' => $formulasOcupadas,
         ]);
     }
 
     public function store(Request $request)
     {
-
         $rules = [
-            'nombre'     => 'required|string|max:255',
-            'apellidos'  => 'required|string|max:255',
-            'correo'     => 'required|email|max:255',
+            'nombre' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
             'consejo_id' => 'required|exists:consejos,id',
-            'puesto'     => 'required|string|max:255',
-            'formula'    => 'required|integer|min:1',
+            'puesto' => 'required|string|max:255',
+            'formula' => 'required|integer|min:1|max:15',
         ];
 
         foreach (Postulacion::TIPOS_DOCUMENTOS as $tipo) {
@@ -49,19 +68,37 @@ class PostulacionController extends Controller
 
         $request->validate($rules);
 
+        //verifica que la fórmula seleccionada todavía tenga espacio disponible
+        $totalIntegrantesFormula = Integrante::where(
+            'consejo_id',
+            $request->consejo_id
+        )
+            ->where(
+                'formula',
+                $request->formula
+            )
+            ->count();
+
+        if ($totalIntegrantesFormula >= 2) {
+            return back()->withErrors([
+                'formula' => 'La fórmula seleccionada ya está completa.'
+            ]);
+        }
+
         return DB::transaction(function () use ($request) {
 
             $postulacion = Postulacion::create([
-                'nombre'            => $request->nombre,
-                'apellidos'         => $request->apellidos,
-                'correo'            => $request->correo,
-                'consejo_id'        => $request->consejo_id,
-                'puesto'            => $request->puesto,
-                'formula'           => $request->formula,
-                'estatus'           => 'pendiente',
+                'nombre' => $request->nombre,
+                'apellidos' => $request->apellidos,
+                'correo' => $request->correo,
+                'consejo_id' => $request->consejo_id,
+                'puesto' => $request->puesto,
+                'formula' => $request->formula,
+                'estatus' => 'pendiente',
                 'fecha_postulacion' => now(),
             ]);
 
+            //guarda los documentos correspondientes a la postulación
             foreach (Postulacion::TIPOS_DOCUMENTOS as $tipo) {
 
                 $archivo = $request->file("documentos.$tipo");
@@ -83,7 +120,10 @@ class PostulacionController extends Controller
 
     public function validacion()
     {
-        $postulaciones = Postulacion::with(['consejo', 'documentos'])
+        $postulaciones = Postulacion::with([
+            'consejo',
+            'documentos'
+        ])
             ->where('estatus', 'pendiente')
             ->latest()
             ->get();
@@ -92,6 +132,7 @@ class PostulacionController extends Controller
             'postulaciones' => $postulaciones,
         ]);
     }
+
     public function aprobar(Request $request, Postulacion $postulacion)
     {
         $request->validate([
@@ -104,16 +145,48 @@ class PostulacionController extends Controller
             if ($postulacion->estatus !== 'pendiente') {
                 return redirect()
                     ->route('postulaciones.validacion')
-                    ->with('error', 'Esta postulación ya fue procesada.');
+                    ->with(
+                        'error',
+                        'Esta postulación ya fue procesada.'
+                    );
+            }
+
+            //verifica nuevamente que la fórmula tenga espacio antes de crear al integrante
+            $totalIntegrantesFormula = Integrante::where(
+                'consejo_id',
+                $postulacion->consejo_id
+            )
+                ->where(
+                    'formula',
+                    $postulacion->formula
+                )
+                ->count();
+
+            if ($totalIntegrantesFormula >= 2) {
+                return redirect()
+                    ->route('postulaciones.validacion')
+                    ->with(
+                        'error',
+                        'No es posible aprobar esta postulación porque la fórmula seleccionada ya está completa.'
+                    );
             }
 
             $archivo = $request->file('acta_resolucion');
 
-            $nombre = 'acta_' . $postulacion->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
-            $ruta = $archivo->storeAs('resoluciones', $nombre, 'public');
+            $nombre = 'acta_' .
+                $postulacion->id .
+                '_' .
+                time() .
+                '.' .
+                $archivo->getClientOriginalExtension();
 
-            //CREAR INTEGRANTE una vez aprobada la postulación
+            $ruta = $archivo->storeAs(
+                'resoluciones',
+                $nombre,
+                'public'
+            );
 
+            //crea al integrante una vez aprobada la postulación
             $integrante = Integrante::create([
                 'nombre' => $postulacion->nombre,
                 'apellido' => $postulacion->apellidos,
@@ -124,11 +197,10 @@ class PostulacionController extends Controller
                 'discapacidad' => null,
                 'discapacidad_tipo' => null,
                 'consejo_id' => $postulacion->consejo_id,
-                'formula' => $postulacion->formula + 1,
+                'formula' => $postulacion->formula,
             ]);
 
-            // Copiar documentos de la postulación al nuevo integrante
-
+            //copia los documentos de la postulación al expediente del integrante
             foreach ($postulacion->documentos as $doc) {
                 Docu::create([
                     'integrante_id' => $integrante->id,
@@ -137,40 +209,47 @@ class PostulacionController extends Controller
                 ]);
             }
 
-            // Crear registro de legalidad para el nuevo integrante
+            //crea el registro de periodo en legalidad
             Legalidad::create([
                 'consejo_id' => $postulacion->consejo_id,
                 'integrante_id' => $integrante->id,
-                'inicio_cargo' => Carbon::parse($request->fecha_validacion)->format('Y-m-d'),
-                'fin_cargo' => Carbon::parse($request->fecha_validacion)
+                'inicio_cargo' => Carbon::parse(
+                    $request->fecha_validacion
+                )->format('Y-m-d'),
+                'fin_cargo' => Carbon::parse(
+                    $request->fecha_validacion
+                )
                     ->addYears(3)
                     ->format('Y-m-d'),
                 'periodo_habil' => '1',
                 'estatus_reeleccion' => 'pendiente',
                 'fecha_inicio_reeleccion' => null,
-                'fecha_validacion' => Carbon::parse($request->fecha_validacion)->format('Y-m-d'),
+                'fecha_validacion' => Carbon::parse(
+                    $request->fecha_validacion
+                )->format('Y-m-d'),
                 'validado_por' => Auth::id(),
-                'ya_reelegido' => false
+                'ya_reelegido' => false,
             ]);
 
-            // ACTUALIZAR POSTULACION
-
+            //actualiza el estado de la postulación
             $postulacion->update([
                 'estatus' => 'aprobada',
                 'validado_por' => Auth::id(),
                 'fecha_validacion' => $request->fecha_validacion,
-                'acta_resolucion' => $ruta
+                'acta_resolucion' => $ruta,
             ]);
 
             return redirect()
                 ->route('postulaciones.validacion')
-                ->with('success', 'Postulación aprobada correctamente.');
+                ->with(
+                    'success',
+                    'Postulación aprobada correctamente.'
+                );
         });
     }
 
     public function rechazar(Request $request, Postulacion $postulacion)
     {
-
         $request->validate([
             'fecha_validacion' => 'required|date',
             'acta_resolucion' => 'required|file|mimes:pdf|max:4096'
@@ -178,19 +257,32 @@ class PostulacionController extends Controller
 
         $archivo = $request->file('acta_resolucion');
 
-        $nombre = 'acta_' . $postulacion->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
+        $nombre = 'acta_' .
+            $postulacion->id .
+            '_' .
+            time() .
+            '.' .
+            $archivo->getClientOriginalExtension();
 
-        $ruta = $archivo->storeAs('resoluciones', $nombre, 'public');
+        $ruta = $archivo->storeAs(
+            'resoluciones',
+            $nombre,
+            'public'
+        );
 
+        //actualiza la postulación como no aprobada
         $postulacion->update([
             'estatus' => 'no_aprobada',
             'validado_por' => Auth::id(),
             'fecha_validacion' => $request->fecha_validacion,
-            'acta_resolucion' => $ruta
+            'acta_resolucion' => $ruta,
         ]);
 
         return redirect()
             ->route('postulaciones.validacion')
-            ->with('success', 'Postulación rechazada.');
+            ->with(
+                'success',
+                'Postulación rechazada.'
+            );
     }
 }
