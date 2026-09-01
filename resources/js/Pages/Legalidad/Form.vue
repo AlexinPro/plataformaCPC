@@ -68,7 +68,6 @@ export default {
 
     calcularPeriodo() {
       if (!this.form.inicio_cargo || !this.form.fin_cargo) return;
-
       const inicio = new Date(this.form.inicio_cargo);
       const fin = new Date(this.form.fin_cargo);
       const diffTime = Math.abs(fin - inicio);
@@ -76,15 +75,12 @@ export default {
 
       this.form.periodo_habil = `${diffDays} días`;
     },
-
     handleNombramiento(e) {
       this.form.doc_nombramiento = e.target.files[0];
     },
-
     handleCarta(e) {
       this.form.doc_carta_reeleccion = e.target.files[0];
     },
-
     handleOtros(e) {
       this.form.doc_otros = e.target.files[0];
     },
@@ -103,13 +99,11 @@ export default {
       } else {
         router.post(`/legalidad/${this.consejo.id}`, data);
       }
-
       setTimeout(() => {
         this.$emit("close");
       }, 300);
     },
   },
-
 };
 </script>
 
@@ -171,7 +165,8 @@ export default {
 
         <!-- BOTONES -->
         <div class="flex justify-end mt-4">
-          <button type="button" @click="$emit('close')" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">
+          <button type="button" @click="$emit('close')" class="px-4 py-2 text-white rounded mr-2" 
+          style="background-color:#C91212;">
             Cancelar
           </button>
 

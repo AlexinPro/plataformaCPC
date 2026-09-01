@@ -1,7 +1,6 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
-import { HandRaisedIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   consejos: {
@@ -313,7 +312,8 @@ const submit = () => {
         <!-- Botones -->
         <div class="flex justify-end space-x-2 pt-4">
 
-          <button type="button" @click="emit('close')" class="px-4 py-2 rounded-md text-white" style="background-color:#C91212;">
+          <button type="button" @click="emit('close')" class="px-4 py-2 rounded-md text-white" 
+          style="background-color:#C91212;">
             Cancelar
           </button>
 

@@ -85,7 +85,6 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
       <!-- Gracfica 3-->
       <div class="bg-white border rounded-xl shadow p-6">
         <h2 class="text-xl font-bold mb-6">Distribución por Género</h2>
-
         <div class="h-[350px]">
           <PieChart :labels="pieLabels" :data="pieData" :colors="pieColors"
             title="Distribución de Integrantes por Género" />
@@ -95,14 +94,12 @@ const pieColors = generoOrder.map(g => colorByGenero[g])
       <!-- grafica 4-->
        <div class="bg-white border rounded-xl shadow p-6">
         <h2 class ="text-xl font-bold mb-6">Distribución por Discapacidad</h2>
-
-        <div class="h-[300px]">
+        <div class="h-[350px]">
           <PieChart
           :labels="discapacidadLabels"
           :data="discapacidadData"
           :colors="discapacidadColors"
-          tittle="Discapacidad"
-          />
+          title="Discapacidad"/>
         </div>
        </div>
 

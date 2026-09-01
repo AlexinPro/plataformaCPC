@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { ref, watchEffect } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
+import { HandRaisedIcon } from '@heroicons/vue/24/solid'
 import Swal from 'sweetalert2'
 import Form from './Form.vue'
 
@@ -114,8 +115,10 @@ function exportarPostulacionesExcel() {
             Exportar Excel
           </button>
 
-          <button @click="showModal = true" class="px-4 py-2 text-white rounded-md" style="background-color:#1E520B;">
-            Nueva postulación
+          <button @click="showModal = true"class="px-4 py-2 text-white rounded-md inline-flex items-center gap-2"
+            style="background-color:#1E520B;">
+              <span>Nueva Postulación</span>
+                <HandRaisedIcon class="w-5 h-5" />
           </button>
         </div>
 

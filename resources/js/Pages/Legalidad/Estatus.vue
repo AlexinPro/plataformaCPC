@@ -182,11 +182,9 @@ export default {
                   {{ grupo.integrante.nombre }}
                   {{ grupo.integrante.apellido }}
                 </td>
-
                 <td class="px-4 py-3 border text-center">
                   {{ vecesReelegido(grupo.periodos) }}
                 </td>
-
                 <td class="px-4 py-3 border text-center">
                   <button class="px-3 py-1 rounded text-white bg-red-800" @click="toggleHistorial(integranteId)">
                     {{ historialAbierto === integranteId
@@ -213,15 +211,12 @@ export default {
                         <td class="px-3 py-2 border">
                           {{ formatearFecha(periodo.inicio_cargo) }}
                         </td>
-
                         <td class="px-3 py-2 border">
                           {{ formatearFecha(periodo.fin_cargo) }}
                         </td>
-
                         <td class="px-3 py-2 border text-center font-semibold">
                           {{ estado(periodo) }}
                         </td>
-
                         <td class="px-3 py-2 border text-center">
                           <button v-if="estado(periodo) === 'pendiente'"
                             class="px-3 py-1 rounded text-white bg-yellow-700" @click="abrirValidacion(periodo)">
