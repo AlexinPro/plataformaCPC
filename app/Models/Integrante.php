@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
-use GuzzleHttp\Psr7\Request;
+use App\Models\Asistencia;
+use App\Models\Consejo;
+use App\Models\Legalidad;
+use App\Models\IntegranteBaja;
 use App\Models\Docu;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class Integrante extends Model
@@ -14,6 +18,7 @@ class Integrante extends Model
     use HasFactory;
     
     protected $fillable = [
+        'user_id',
         'nombre',
         'apellido',
         'genero',
@@ -25,6 +30,11 @@ class Integrante extends Model
         'consejo_id',
         'formula'
     ];
+
+    //relacion user - integrante: un integrante pertenece a un usuario
+    public function user(): BelongsTo{
+        return $this->belongsTo(User::class);
+    }
     
     //relacion un integrane pertenece a varios consejos
     public function consejo(){

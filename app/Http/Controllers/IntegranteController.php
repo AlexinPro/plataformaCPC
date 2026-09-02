@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Integrante;
 use App\Models\Consejo;
+use App\Models\User;
 use App\Models\IntegranteBaja;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class IntegranteController extends Controller
 {
@@ -34,18 +35,30 @@ class IntegranteController extends Controller
             'discapacidad' => 'nullable|string|max:25',
             'discapacidad_tipo' => 'nullable|string|max:255|required_if:discapacidad,si',
             'puesto' => 'required|string|max:255',
-            'correo' => 'required|email|unique:integrantes,correo',
+            'correo' => 'required|email|unique:integrantes,correo|unique:users,email',
             'consejo_id' => 'required|exists:consejos,id',
             'formula' => 'required|integer|min:1',
         ]);
-
-        Integrante::create($validated);
+        DB::transaction(function () use ($validated){
+            //crear usuario
+            $user = User::create(['name' => $validated['nombre'] . ' ' . $validated['apellido'],
+             'email' => $validated['correo'], 
+             //contrseña temporal inicial
+             'password' => Hash::make('pass123'),
+            ]);
+            //ASIGNAR ROL
+            $user->assignRole('integrante');
+            //crear integrante y asociar el user_id
+            $validated['user_id'] = $user->id;
+            
+            Integrante::create($validated);
+        });
 
         return redirect()->route('consejos.integrantes', $request->consejo_id);
     }
 
     public function update(Request $request, Integrante $integrante)
-    {
+    { 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
@@ -54,12 +67,24 @@ class IntegranteController extends Controller
             'discapacidad' => 'nullable|string|max:25',
             'discapacidad_tipo' => 'nullable|string|max:255|required_if:discapacidad,si',
             'puesto' => 'required|string|max:255',
-            'correo' => 'required|email|unique:integrantes,correo,' . $integrante->id,
-        ]);
+            'correo' => ['required','email',
+                'unique:integrantes,correo,' . $integrante->id,
+                'unique:users,email,' . $integrante->user_id,
+        ],
 
+    ]);
+
+    DB::transaction(function () use ($validated, $integrante) {
+        //ACTUALIZAR INTEGRANTE
         $integrante->update($validated);
+        //ACTUALIZAR USUARIO ASOCIADO
+        $integrante->user->update([
+            'name' => $validated['nombre'] . ' ' . $validated['apellido'],
+            'email' => $validated['correo'],
+        ]);
+    });
 
-        return redirect()->route('consejos.integrantes', $integrante->consejo_id);
+    return redirect()->route('consejos.integrantes',$integrante->consejo_id); 
     }
 
     public function destroy(Request $request, Integrante $integrante)

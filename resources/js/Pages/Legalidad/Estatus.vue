@@ -155,7 +155,7 @@ export default {
       </Link>
     </div>
 
-    <div class="p-6 space-y-6">
+  <div class="p-6 space-y-6">
 
       <h1 class="text-2xl font-bold text-center">
         Validación de Reelecciones
@@ -285,7 +285,6 @@ export default {
           </div>
         </div>
       </div>
-
-    </div>
+  </div>
   </AuthenticatedLayout>
 </template>
