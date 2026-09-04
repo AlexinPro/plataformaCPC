@@ -26,11 +26,17 @@ class HandleInertiaRequests extends Middleware
      * Define the props that are shared by default.
      */
     public function share(Request $request)
-{
+   {
     return array_merge(parent::share($request), [
         'auth' => [
             'user' => $request->user(),
+            'roles' => function () use ($request) {
+                return $request->user()
+                    ? $request->user()->getRoleNames()->values()->all()
+                    : [];
+            },
         ],
+
         'flash' => function () use ($request) {
             return [
                 'success' => $request->session()->get('success'),
@@ -38,6 +44,7 @@ class HandleInertiaRequests extends Middleware
         },
         'showingMobileMenu' => false,
         'privacyAccepted' => optional($request->user())->privacy_accepted ?? false,
+        'mustChangePassword' => optional($request->user())->must_change_password ?? false,
     ]);
-}
+    }
 }

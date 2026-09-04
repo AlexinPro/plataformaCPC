@@ -1,7 +1,7 @@
 <script>
 import NavLink from '@/Components/NavLink.vue'
-import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue'
 
 export default {
   components: {
@@ -10,12 +10,18 @@ export default {
   },
 
   setup() {
-    let showingTwoLevelMenu = ref(false)
+  let showingTwoLevelMenu = ref(false)
+  const page = usePage()
+  const isIntegrante = computed(() =>
+    page.props.auth?.roles?.includes('integrante')
+  )
 
-    return {
-      showingTwoLevelMenu
-    }
-  },
+  return {
+    showingTwoLevelMenu,
+    isIntegrante
+  }
+
+ },
 }
 </script>
 
@@ -66,7 +72,7 @@ export default {
           </NavLink>
         </li>
 
-        <li class="relative px-6 py-3">
+        <li v-if="!isIntegrante" class="relative px-6 py-3">
           <NavLink :href="route('consejos.convocatorias')" :active="route().current('consejos.convocatorias')">
             <template #icon>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -77,7 +83,7 @@ export default {
           </NavLink>
         </li>
 
-        <li class="relative px-6 py-3">
+        <li v-if="!isIntegrante" class="relative px-6 py-3">
           <NavLink :href="route('consejos.reportes')" :active="route().current('consejos.reportes')">
             <template #icon>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -102,7 +108,7 @@ export default {
         </li>
     
         <!--Usuarios-->
-        <li class="relative px-6 py-3">
+        <li v-if="!isIntegrante" class="relative px-6 py-3">
           <NavLink :href="route('users.index')" :active="route().current('users.index')">
             <template #icon>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">

@@ -97,7 +97,6 @@ class IntegranteController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $integrante) {
-
             // Guardar PDF en storage/app/public/bajas
             $pdfPath = $request->file('evidencia_pdf')->store('bajas', 'public');
 

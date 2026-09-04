@@ -3,6 +3,7 @@ import Navigation from './Navigation.vue'
 import TopMenu from "./TopMenu.vue"
 import NavigationMobile from './NavigationMobile.vue'
 import PrivacyModal from '@/Components/PrivacyModal.vue'
+import PasswordReminderModal from '@/Components/PasswordReminderModal.vue'
 import { usePage, router } from '@inertiajs/vue3'
 
 const page = usePage()
@@ -12,6 +13,7 @@ const page = usePage()
 
 <template>
   <PrivacyModal/>
+  <PasswordReminderModal/>
   <div>
     <div class="flex h-screen bg-gray-50">
       <Navigation />

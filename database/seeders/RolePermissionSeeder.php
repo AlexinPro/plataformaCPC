@@ -9,56 +9,44 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        /*
-        |--------------------------------------------------------------------------
-        | SUPER ADMIN
-        |--------------------------------------------------------------------------
-        | No requiere permisos explícitos.
-        | Tiene acceso total mediante Gate::before.
-        */
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        //----------------super admin-----------
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super_admin'
+        ]);
         $superAdmin->syncPermissions([]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ADMIN
-        |--------------------------------------------------------------------------
-        */
-        $admin = Role::where('name', 'admin')->first();
 
+        //----------------admin-----------
+        $admin = Role::where('name', 'admin')->first();
         $admin->syncPermissions([
-            // Lectura
+
+            //Lectura
+
             'consejos.ver',
             'asistencias.ver',
             'legalidad.ver',
             'reportes.ver',
 
-            // Acciones administrativas
+            //Acciones administrativas
+
             'usuarios.crear',
             'usuarios.editar',
             'convocatorias.crear',
             'asistencias.crear',
 
-            // Documentos
+            //Documentos
             'documentos.subir',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | INTEGRANTE
-        |--------------------------------------------------------------------------
-        */
+        //----------integrante---------
         $integrante = Role::where('name', 'integrante')->first();
-
         $integrante->syncPermissions([
-            // Lectura
+            //Lectura
             'consejos.ver',
             'asistencias.ver',
             'legalidad.ver',
-            'reportes.ver',
-
-            // Documentos
-            'documentos.subir',
+            //Documentos
+          'documentos.subir',
         ]);
     }
 }
