@@ -40,11 +40,12 @@ class IntegranteController extends Controller
             'formula' => 'required|integer|min:1',
         ]);
         DB::transaction(function () use ($validated){
-            //crear usuario
+            //crear usuario          
             $user = User::create(['name' => $validated['nombre'] . ' ' . $validated['apellido'],
              'email' => $validated['correo'], 
              //contrseña temporal inicial
              'password' => Hash::make('pass123'),
+             'must_change_password' => true,
             ]);
             //ASIGNAR ROL
             $user->assignRole('integrante');
