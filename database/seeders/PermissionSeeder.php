@@ -10,35 +10,56 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            //Asistencias
-            'asistencias.ver',
-            'asistencias.crear',
 
-            // Usuarios
-            'usuarios.crear',
-            'usuarios.editar',
+            //-------------archivo digital------------
+            'archivo_digital.ver',
 
-            //consejos
+            'integrantes.crear',
+            'integrantes.editar',
+            'integrantes.baja',
+
+            'documentos.subir',
+            'documentos.ver',
+            'documentos.observar',
+            'documentos.aprobar',
+
+            // ---------consejos------
             'consejos.ver',
 
-            //legalidad
+            // -----------asistencias-------
+            'asistencias.ver',
+            'asistencias.crear',
+            'sesiones.ver',
+
+            // -------legalidad------------
             'legalidad.ver',
             'legalidad.solicitar_reeleccion',
             'legalidad.validar_reeleccion',
             'legalidad.rechazar_reeleccion',
 
-            //reportes
+            // -------------convocatorias------
+            'convocatorias.ver',
+            'convocatorias.crear',
+            'convocatorias.editar',
+
+            //-------- reportes--------------
             'reportes.ver',
 
-            // Convocatorias
-            'convocatorias.crear',
+            // -----------usuarios------------
+            'usuarios.ver',
+            'usuarios.crear',
+            'usuarios.editar',
 
-            // Documentos
-            'documentos.subir',
+            // ------------postulaciones---------------
+            'postulaciones.crear',
+            'postulaciones.ver',
+            'postulaciones.validar',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate([
+                'name' => $permission,
+            ]);
         }
     }
 }

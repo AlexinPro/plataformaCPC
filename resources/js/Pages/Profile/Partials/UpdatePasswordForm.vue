@@ -41,7 +41,6 @@ const updatePassword = () => {
             form.reset();
 
             // *Ocultar nuevamente las contraseñas después de actualizar*
-
             showCurrentPassword.value = false;
             showPassword.value = false;
             showPasswordConfirmation.value = false;
