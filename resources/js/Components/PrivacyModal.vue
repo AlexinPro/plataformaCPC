@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { usePage, useForm } from '@inertiajs/vue3'
+import { usePage, useForm, router } from '@inertiajs/vue3'
 
 const page = usePage()
 const form = useForm({})
@@ -27,7 +27,12 @@ function aceptar() {
 
 // rechazar aviso
 function rechazar() {
-    window.location.href = '/logout'
+    sessionStorage.removeItem('privacyShown')  
+    router.post(route('logout'),{
+        onFinish: () => {
+            window.location.replace(route('login'))
+        }
+    })
 }
 </script>
 
@@ -64,10 +69,11 @@ class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
             class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
             Rechazar
             </button>
-            <button
-            @click="aceptar"
+
+            <button @click="aceptar"
+            :disabled="form.processing"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            Aceptar
+            {{ form.processing ? 'Procesando...' : 'Aceptar' }}
             </button>
         </div>
     </div>

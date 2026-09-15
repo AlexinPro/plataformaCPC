@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'privacy' => \App\Http\Middleware\EnsurePrivacyAccepted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

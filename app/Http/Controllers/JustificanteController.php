@@ -140,25 +140,22 @@ class JustificanteController extends Controller
     }
 
     // Aprobar justificante
-    public function aprobar(Asistencia $asistencia) {
+    public function aprobar(Asistencia $asistencia) 
+    {
         // Validar que exista un justificante
         if (!$asistencia->justificante) {
-            return back()->withErrors([
-                'justificante' => 'Esta asistencia no tiene un justificante para aprobar.',
-            ]);
-        }
-
-        // Aprobar justificante y actualizar asistencia
-        $asistencia->update([
-            'estado_justificante' => 'aprobado',
-            'estado' => 'justificada',
+        return back()->withErrors([
+            'justificante' => 'Esta asistencia no tiene un justificante para rechazar.',
         ]);
-
-        return back()->with(
-            'success',
-            'Justificante aprobado y asistencia marcada como justificada.'
-        );
     }
+        $asistencia->estado_justificante = 'rechazado';
+        $asistencia->estado = 'falto';
+        $asistencia->save();
+
+        return back()->with('success', 'Justificante rechazado correctamente.');
+
+    }
+    
 
     // Rechazar justificante
     public function rechazar(Asistencia $asistencia) {

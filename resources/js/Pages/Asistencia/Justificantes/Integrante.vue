@@ -56,10 +56,10 @@ function guardar() {
 </script>
 
 <template>
-  <!-- Fondo del modal -->
+  <!-- fondo del modal -->
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
 
-    <!-- Contenedor -->
+    <!-- contenedor -->
     <div class="w-full max-w-xl rounded-lg bg-white shadow-xl">
 
       <!-- Encabezado -->
@@ -72,9 +72,8 @@ function guardar() {
           </p>
         </div>
 
-        <!-- Cerrar -->
-        <button type="button" @click="emit('close')"
-          class="text-2xl leading-none text-gray-400 hover:text-gray-700">
+        <!--cerrar -->
+        <button type="button" @click="emit('close')" class="text-2xl leading-none text-gray-400 hover:text-gray-700">
           ×
         </button>
       </div>
@@ -114,17 +113,15 @@ function guardar() {
 
           <select v-model="form.tipo_sesion"
             class="w-full rounded border px-3 py-2">
-
             <option value="" disabled>
               Seleccione el tipo de sesión
             </option>
-
             <option value="ordinaria">Ordinaria</option>
             <option value="solemne">Solemne</option>
             <option value="extraordinaria">Extraordinaria</option>
           </select>
 
-          <!-- Error backend -->
+          <!-- error backend -->
           <p v-if="form.errors.tipo_sesion" class="mt-1 text-sm text-red-600">
             {{ form.errors.tipo_sesion }}
           </p>
@@ -139,12 +136,12 @@ function guardar() {
           <input type="file" accept="application/pdf" @change="seleccionarArchivo"
             class="w-full rounded border px-3 py-2">
 
-          <!-- Error frontend -->
+          <!-- error frontend -->
           <p v-if="errorArchivo" class="mt-1 text-sm text-red-600">
             {{ errorArchivo }}
           </p>
 
-          <!-- Error backend -->
+          <!-- error backend -->
           <p v-if="form.errors.justificante" class="mt-1 text-sm text-red-600">
             {{ form.errors.justificante }}
           </p>
@@ -160,7 +157,6 @@ function guardar() {
             class="rounded bg-gray-300 px-4 py-2 text-gray-800 transition hover:bg-gray-400">
             Cancelar
           </button>
-
           <button type="button" @click="guardar" :disabled="form.processing"
             class="rounded bg-yellow-700 px-5 py-2 text-white transition hover:bg-yellow-800 disabled:opacity-50">
             {{ form.processing ? 'Enviando...' : 'Enviar justificante' }}

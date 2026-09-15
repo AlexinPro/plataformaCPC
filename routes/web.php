@@ -31,11 +31,11 @@ Route::get('/about', fn () => Inertia::render('About'))->name('about');
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'privacy'])
     ->name('dashboard');
 
 // Rutas autenticadas
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'privacy')->group(function () {
 
     // Aviso de privacidad
     Route::post('/privacy/accept', function (Request $request) {

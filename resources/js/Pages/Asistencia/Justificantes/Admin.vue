@@ -116,13 +116,12 @@ function rechazar() {
         </div>
 
         <p v-if="!justificantes.length" class="text-center text-gray-500 py-6">
-          No hay justificantes registrados.
+          No hay justificantes subidos aun.
         </p>
       </div>
 
       <!-- Revisar justificante -->
       <div v-else>
-
         <button @click="seleccionado = null" class="mb-4 text-gray-600 hover:underline">
           ← Volver
         </button>
@@ -136,8 +135,7 @@ function rechazar() {
           {{ seleccionado.fecha }} · {{ seleccionado.tipo_sesion }}
         </p>
 
-        <iframe
-          :src="`/storage/${seleccionado.justificante}`"
+        <iframe :src="`/storage/${seleccionado.justificante}`"
           class="w-full h-[450px] border rounded mb-4">
         </iframe>
 
@@ -150,7 +148,7 @@ function rechazar() {
 
           <button @click="aprobar"class="px-4 py-2 bg-green-700 text-white 
           rounded hover:bg-green-900">
-            Aprobar
+            Aprobar   
           </button>
         </div>
       </div>
