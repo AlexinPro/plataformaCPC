@@ -1,34 +1,27 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { usePage, useForm, router } from '@inertiajs/vue3'
 
 const page = usePage()
 const form = useForm({})
+const emit = defineEmits(['accepted']) 
 
-// visible si el usuario NO ha aceptado
-const visible = ref(false)
+// visible mientras el usuario no haya aceptado el aviso de privacidad
+const visible = computed(() => !page.props.privacyAccepted)
 
-onMounted(() => {
-    const avisoMostrado = sessionStorage.getItem('privacyShown')
-    if (!page.props.privacyAccepted && !avisoMostrado) {
-        visible.value = true
-        sessionStorage.setItem('privacyShown', 'true')
-    }
-})
 // aceptar aviso
 function aceptar() {
     form.post(route('privacy.accept'), {
         preserveScroll: true,
         onSuccess: () => {
-            visible.value = false
-        }
+            emit('accepted')
+        },
     })
 }
 
 // rechazar aviso
 function rechazar() {
-    sessionStorage.removeItem('privacyShown')  
-    router.post(route('logout'),{
+    router.post(route('logout'), {
         onFinish: () => {
             window.location.replace(route('login'))
         }
@@ -37,7 +30,6 @@ function rechazar() {
 </script>
 
 <template>
-
 <div v-if="visible"
 class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
     <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6">

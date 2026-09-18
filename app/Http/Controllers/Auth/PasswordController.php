@@ -27,4 +27,22 @@ class PasswordController extends Controller
 
         return back();
     }
+
+    /**
+     * Update the user's password when a temporary password
+     * must be replaced.
+     */
+    public function forceUpdate(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
+        ]);
+
+        return back();
+    }
 }

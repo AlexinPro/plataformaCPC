@@ -47,6 +47,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')
+            ->withHeaders([
+                'Clear-Site-Data' => '"cache", "cookies", "storage"',
+            ]);
     }
 }

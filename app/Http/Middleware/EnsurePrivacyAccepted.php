@@ -40,7 +40,7 @@ class EnsurePrivacyAccepted
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
 
-            return $response;
+            return $response; 
         }
 
         /*
@@ -56,7 +56,10 @@ class EnsurePrivacyAccepted
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login');
+            return redirect()->route('login')
+                ->withHeaders([
+                    'Clear-Site-Data' => '"cache", "cookies", "storage"',
+                ]);
         }
 
         /*
