@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
+import DraggableModal from '@/Components/DraggableModal.vue'
 
 const props = defineProps({
   consejoId: {
@@ -89,22 +90,8 @@ function submitForm() {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4"
-    @click.self="cerrarModal">
-    <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-
-      <!-- Título -->
-      <div class="mb-5">
-        <h2 class="text-xl font-bold text-gray-800">
-          Programar sesión
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-500">
-          Selecciona el tipo de sesión para la fecha indicada.
-        </p>
-      </div>
-
+  <DraggableModal title="Programar sesion" max-width="max-w-md"
+    @close="cerrarModal">
       <!-- Fecha -->
       <div class="mb-4">
         <label class="mb-1 block text-sm font-medium text-gray-700">
@@ -166,6 +153,5 @@ function submitForm() {
           {{ loading ? 'Programando...' : 'Programar sesión' }}
         </button>
       </div>
-    </div>
-  </div>
+  </DraggableModal>
 </template>

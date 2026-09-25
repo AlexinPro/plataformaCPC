@@ -1,9 +1,13 @@
 <script>
 import { router } from "@inertiajs/vue3";
-
+import DraggableModal from "@/Components/DraggableModal.vue";
 
 export default {
+  components: {
+    DraggableModal
+  },
   props: {
+    show: Boolean,
     consejo: Object,
     integrantes: Array,
     editData: Object, // Si existe → es reelección
@@ -43,7 +47,6 @@ export default {
      *para que funcione con <input type="date">*/
     formatDateForInput(date) {
       if (!date) return "";
-
       const d = new Date(date);
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -107,76 +110,130 @@ export default {
 };
 </script>
 
+
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white rounded shadow p-6 w-96">
+  <DraggableModal
+    v-if="show"
+    :title="esReeleccion
+      ? 'Inicio de proceso de reelección'
+      : 'Crear periodo'"
+    max-width="max-w-md"
+    @close="$emit('close')"
+  >
+    <form @submit.prevent="submitForm">
 
-      <h2 class="text-xl font-bold mb-4 text-center">
-        {{ esReeleccion ? 'Inicio de proceso de reelección' : 'Crear periodo' }}
-      </h2>
+      <label class="block mb-2 font-semibold">
+        Integrante
+      </label>
 
-      <form @submit.prevent="submitForm">
+      <select
+        v-model="form.integrante_id"
+        class="w-full border rounded px-3 py-2 mb-3 bg-gray-100"
+        :disabled="esReeleccion"
+      >
+        <option value="">Seleccione...</option>
 
-        <!-- INTEGRANTE -->
-        <label class="block mb-2 font-semibold">Integrante</label>
-        <select v-model="form.integrante_id" class="w-full border rounded px-3 py-2 mb-3 bg-gray-100"
-          :disabled="esReeleccion">
-          <option value="">Seleccione...</option>
-          <option v-for="i in integrantes" :key="i.id" :value="i.id">
-            {{ i.nombre }} {{ i.apellido }}
-          </option>
-        </select>
+        <option
+          v-for="i in integrantes"
+          :key="i.id"
+          :value="i.id"
+        >
+          {{ i.nombre }} {{ i.apellido }}
+        </option>
+      </select>
 
-        <!-- FECHA INICIO -->
-        <label class="block mb-2 font-semibold">Fecha de inicio</label>
-        <input type="date" v-model="form.inicio_cargo" class="w-full border rounded px-3 py-2 mb-3"
-          :disabled="esReeleccion" @change="autoCalcularFin" />
+      <label class="block mb-2 font-semibold">
+        Fecha de inicio
+      </label>
 
-        <!-- FECHA FIN -->
-        <label class="block mb-2 font-semibold">Fecha de culminación</label>
-        <input type="date" v-model="form.fin_cargo" class="w-full border rounded px-3 py-2 mb-3"
-          :disabled="esReeleccion" @change="calcularPeriodo" />
+      <input
+        type="date"
+        v-model="form.inicio_cargo"
+        class="w-full border rounded px-3 py-2 mb-3"
+        :disabled="esReeleccion"
+        @change="autoCalcularFin"
+      />
 
-        <!-- DOCUMENTOS SOLO EN REELECCIÓN -->
-        <div v-if="esReeleccion">
+      <label class="block mb-2 font-semibold">
+        Fecha de culminación
+      </label>
 
-          <label class="block mb-2 font-semibold">
-            Nombramiento (PDF)
-          </label>
-          <input type="file" accept="application/pdf" @change="handleNombramiento"
-            class="w-full border rounded px-3 py-2 mb-3" required />
+      <input
+        type="date"
+        v-model="form.fin_cargo"
+        class="w-full border rounded px-3 py-2 mb-3"
+        :disabled="esReeleccion"
+        @change="calcularPeriodo"
+      />
 
-          <label class="block mb-2 font-semibold">
-            Carta de reelección (PDF)
-          </label>
-          <input type="file" accept="application/pdf" @change="handleCarta" class="w-full border rounded px-3 py-2 mb-3"
-            required />
+      <div v-if="esReeleccion">
 
-          <label class="block mb-2 font-semibold">
-            Otros documentos (PDF, opcional)
-          </label>
-          <input type="file" accept="application/pdf" @change="handleOtros"
-            class="w-full border rounded px-3 py-2 mb-3" />
+        <label class="block mb-2 font-semibold">
+          Nombramiento (PDF)
+        </label>
 
-          <p class="text-sm text-yellow-700 mt-2">
-            Los documentos serán revisados por un Administrador.
-          </p>
-        </div>
+        <input
+          type="file"
+          accept="application/pdf"
+          @change="handleNombramiento"
+          class="w-full border rounded px-3 py-2 mb-3"
+          required
+        />
 
-        <!-- BOTONES -->
-        <div class="flex justify-end mt-4">
-          <button type="button" @click="$emit('close')" class="px-4 py-2 text-white rounded mr-2" 
-          style="background-color:#C91212;">
-            Cancelar
-          </button>
+        <label class="block mb-2 font-semibold">
+          Carta de reelección (PDF)
+        </label>
 
-          <button type="submit" class="px-4 py-2 text-white rounded"
-            :style="{ backgroundColor: esReeleccion ? '#7A1F32' : '#C7A447' }">
-            Guardar
-          </button>
-        </div>
+        <input
+          type="file"
+          accept="application/pdf"
+          @change="handleCarta"
+          class="w-full border rounded px-3 py-2 mb-3"
+          required
+        />
 
-      </form>
-    </div>
-  </div>
+        <label class="block mb-2 font-semibold">
+          Otros documentos (PDF, opcional)
+        </label>
+
+        <input
+          type="file"
+          accept="application/pdf"
+          @change="handleOtros"
+          class="w-full border rounded px-3 py-2 mb-3"
+        />
+
+        <p class="text-sm text-yellow-700 mt-2">
+          Los documentos serán revisados por un Administrador.
+        </p>
+
+      </div>
+
+      <div class="flex justify-end mt-4">
+
+        <button
+          type="button"
+          @click="$emit('close')"
+          class="px-4 py-2 text-white rounded mr-2"
+          style="background-color:#C91212;"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="px-4 py-2 text-white rounded"
+          :style="{
+            backgroundColor: esReeleccion
+              ? '#7A1F32'
+              : '#C7A447'
+          }"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </form>
+  </DraggableModal>
 </template>

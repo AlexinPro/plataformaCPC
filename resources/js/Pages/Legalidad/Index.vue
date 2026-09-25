@@ -242,7 +242,7 @@ export default {
         </table>
       </div>
 
-      <Form v-if="showForm" :consejo="consejo" :integrantes="integrantes" :editData="selectedLegalidad"
+      <Form :show="showForm" :consejo="consejo" :integrantes="integrantes" :editData="selectedLegalidad"
         @close="closeForm" />
 
     </div>

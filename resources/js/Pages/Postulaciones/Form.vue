@@ -8,8 +8,8 @@ const props = defineProps({
     default: () => []
   },
   formulasOcupadas: {
-    type: Array,
-    default: () => []
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -20,6 +20,8 @@ const form = useForm({
   apellidos: '',
   correo: '',
   puesto: '',
+  genero: '',
+  colonia: '',
   consejo_id: '',
   formula: '',
   documentos: {
@@ -32,6 +34,14 @@ const form = useForm({
     cumplimiento_normatividad: null
   }
 })
+
+const generos = [
+  { value: 'mujer', label: 'Mujer' },
+  { value: 'hombre', label: 'Hombre' },
+  { value: 'no_binario', label: 'No binario' },
+  { value: 'prefiero_autodescribirme', label: 'Prefiero autodescribirme' },
+  { value: 'prefiero_no_responder', label: 'Prefiero no responder' }
+]
 
 //manejo de fórmulas disponibles
 const formulasDisponibles = computed(() => {
@@ -120,6 +130,34 @@ const submit = () => {
 
             <div v-if="form.errors.apellidos" class="text-red-500 text-sm">
               {{ form.errors.apellidos }}
+            </div>
+          </div>
+
+          <!-- Género -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Género
+            </label>
+            <select v-model="form.genero" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option value="">Seleccione un género</option>
+              <option v-for="genero in generos" :key="genero.value" :value="genero.value">
+                {{ genero.label }}
+              </option>
+            </select>
+            <div v-if="form.errors.genero" class="text-red-500 text-sm">
+              {{ form.errors.genero }}
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Dirección
+            </label>
+            <input v-model="form.colonia" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+              placeholder="Ingrese su dirección" />
+            <div v-if="form.errors.colonia" class="text-red-500 text-sm">
+              {{ form.errors.colonia }}
             </div>
           </div>
 
@@ -312,8 +350,8 @@ const submit = () => {
         <!-- Botones -->
         <div class="flex justify-end space-x-2 pt-4">
 
-          <button type="button" @click="emit('close')" class="px-4 py-2 rounded-md text-white" 
-          style="background-color:#C91212;">
+          <button type="button" @click="emit('close')" class="px-4 py-2 rounded-md text-white"
+            style="background-color:#C91212;">
             Cancelar
           </button>
 

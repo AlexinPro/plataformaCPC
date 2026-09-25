@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
+import DraggableModal from '@/Components/DraggableModal.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -10,20 +11,29 @@ const props = defineProps({
     default: () => []
   }
 })
-
 const emit = defineEmits(['close'])
 const seleccionado = ref(null)
 
+// Abre el detalle del justificante.
 function abrir(justificante) {
   seleccionado.value = justificante
 }
 
+// Cierra el modal y limpia la selección.
 function cerrar() {
   seleccionado.value = null
   emit('close')
 }
 
+// Regresa a la lista de justificantes.
+function volver() {
+  seleccionado.value = null
+}
+
+// Aprueba el justificante seleccionado.
 function aprobar() {
+  if (!seleccionado.value) return
+
   Swal.fire({
     title: '¿Aprobar justificante?',
     text: 'La asistencia será marcada como justificada.',
@@ -34,23 +44,35 @@ function aprobar() {
   }).then(result => {
     if (!result.isConfirmed) return
 
-    //aprobar
-    router.patch(route('justificantes.aprobar', seleccionado.value.id), {}, {
-      preserveScroll: true,
-      onSuccess: () => {
-        cerrar()
+    router.patch(
+      route('justificantes.aprobar', seleccionado.value.id),
+      {},
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          cerrar()
+          Swal.fire({
+            icon: 'success',
+            title: 'Justificante aprobado',
+            text: 'La asistencia fue marcada como justificada.'
+          })
+        },
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Justificante aprobado',
-          text: 'La asistencia fue marcada como justificada.'
-        })
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No fue posible aprobar el justificante.'
+          })
+        }
       }
-    })
+    )
   })
 }
 
+// Rechaza el justificante seleccionado.
 function rechazar() {
+  if (!seleccionado.value) return
   Swal.fire({
     title: '¿Rechazar justificante?',
     text: 'La asistencia permanecerá como falta.',
@@ -60,98 +82,106 @@ function rechazar() {
     cancelButtonText: 'Cancelar'
   }).then(result => {
     if (!result.isConfirmed) return
-
-    //rechazar
-    router.post(route('justificantes.rechazar', seleccionado.value.id), {}, {
-      preserveScroll: true,
-      onSuccess: () => {
-        cerrar()
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Justificante rechazado',
-          text: 'La asistencia permanece marcada como falta.'
-        })
+    router.patch(
+      route('justificantes.rechazar', seleccionado.value.id),
+      {},
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          cerrar()
+          Swal.fire({
+            icon: 'success',
+            title: 'Justificante rechazado',
+            text: 'La asistencia permanece marcada como falta.'
+          })
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No fue posible rechazar el justificante.'
+          })
+        }
       }
-    })
+    )
   })
 }
 </script>
 
 <template>
-  <div
-    v-if="show" class="fixed inset-0 z-50 flex 
-    items-center justify-center bg-black bg-opacity-40 p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Justificantes</h2>
-        <button @click="cerrar"
-          class="text-2xl text-gray-500 hover:text-gray-800">
-          ×
+  <DraggableModal v-if="show"
+    :title="seleccionado ? 'Revisar justificante' : 'Justificantes'"
+    @close="cerrar">
+    <!-- Lista de justificantes -->
+    <div v-if="!seleccionado" class="space-y-3">
+      <div v-for="j in justificantes"
+        :key="j.id"
+        class="flex items-center justify-between gap-4 rounded border p-4">
+        <div>
+          <p class="font-semibold">
+            {{ j.integrante?.nombre }}
+            {{ j.integrante?.apellido }}
+          </p>
+
+          <p class="text-sm text-gray-500">
+            {{ j.fecha }} · {{ j.tipo_sesion }}
+          </p>
+
+          <p class="text-sm font-medium capitalize">
+            Estado: {{ j.estado_justificante }}
+          </p>
+        </div>
+
+        <button type="button" class="rounded bg-gray-700 px-4 py-2 text-white hover:bg-gray-900"
+          @click="abrir(j)">
+          Revisar
         </button>
       </div>
 
-      <!-- Lista de justificantes -->
-      <div v-if="!seleccionado" class="space-y-3">
-        <div v-for="j in justificantes" :key="j.id"
-          class="border rounded p-4 flex justify-between items-center">
-          <div>
-            <p class="font-semibold">
-              {{ j.integrante?.nombre }}
-              {{ j.integrante?.apellido }}
-            </p>
+      <p v-if="!justificantes.length" class="py-6 text-center text-gray-500">
+        No hay justificantes subidos aún.
+      </p>
+    </div>
 
-            <p class="text-sm text-gray-500">
-              {{ j.fecha }} · {{ j.tipo_sesion }}
-            </p>
+    <!-- Detalle del justificante -->
+    <div v-else>
+      <button type="button" class="mb-4 text-gray-600 hover:underline"
+        @click="volver">
+        ← Volver
+      </button>
 
-            <p class="text-sm font-medium capitalize">
-              Estado: {{ j.estado_justificante }}
-            </p>
-          </div>
+      <h3 class="mb-1 text-lg font-bold">
+        {{ seleccionado.integrante?.nombre }}
+        {{ seleccionado.integrante?.apellido }}
+      </h3>
 
-          <button @click="abrir(j)"class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-900">
-            Revisar
-          </button>
-        </div>
+      <p class="mb-4 text-sm text-gray-500">
+        {{ seleccionado.fecha }} · {{ seleccionado.tipo_sesion }}
+      </p>
 
-        <p v-if="!justificantes.length" class="text-center text-gray-500 py-6">
-          No hay justificantes subidos aun.
-        </p>
-      </div>
+      <!-- Visualización del PDF -->
+      <iframe :src="route('justificantes.show', seleccionado.id)"
+        class="mb-4 h-[450px] w-full rounded border">
+      </iframe>
 
-      <!-- Revisar justificante -->
-      <div v-else>
-        <button @click="seleccionado = null" class="mb-4 text-gray-600 hover:underline">
-          ← Volver
+      <!-- Acciones de validación -->
+      <div v-if="seleccionado.estado_justificante === 'pendiente'"
+        class="flex justify-end gap-3">
+        <button type="button" class="rounded bg-red-700 px-4 py-2 text-white hover:bg-red-900"
+          @click="rechazar">
+          Rechazar
         </button>
 
-        <h3 class="font-bold text-lg mb-1">
-          {{ seleccionado.integrante?.nombre }}
-          {{ seleccionado.integrante?.apellido }}
-        </h3>
+        <button type="button" class="rounded bg-green-700 px-4 py-2 text-white hover:bg-green-900"
+          @click="aprobar">
+          Aprobar
+        </button>
+      </div>
 
-        <p class="text-sm text-gray-500 mb-4">
-          {{ seleccionado.fecha }} · {{ seleccionado.tipo_sesion }}
-        </p>
-
-        <iframe :src="`/storage/${seleccionado.justificante}`"
-          class="w-full h-[450px] border rounded mb-4">
-        </iframe>
-
-        <div v-if="seleccionado.estado_justificante === 'pendiente'"
-          class="flex justify-end gap-3">
-          <button @click="rechazar"
-            class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-900">
-            Rechazar
-          </button>
-
-          <button @click="aprobar"class="px-4 py-2 bg-green-700 text-white 
-          rounded hover:bg-green-900">
-            Aprobar   
-          </button>
-        </div>
+      <!-- Estado cuando ya fue validado -->
+      <div v-else class="rounded bg-gray-100 p-3 text-center text-sm text-gray-600">
+        Este justificante ya fue procesado.
       </div>
     </div>
-  </div>
+  </DraggableModal>
 </template>
