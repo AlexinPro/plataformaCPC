@@ -1,6 +1,7 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+import DragagableModal from '@/Components/DraggableModal.vue'
 
 const props = defineProps({
   consejos: {
@@ -91,16 +92,7 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh]">
-      <button type="button" @click="emit('close')" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-        ✕
-      </button>
-
-      <h3 class="text-lg font-semibold mb-4">
-        Nueva Postulación
-      </h3>
-
+  <DragagableModal title="Nueva Postulación" max-width="max-w-3xl" @close="emit('close')">
       <form @submit.prevent="submit" class="space-y-6">
 
         <!-- Datos personales -->
@@ -359,9 +351,7 @@ const submit = () => {
             class="px-4 py-2 bg-yellow-700 text-white rounded-md hover:bg-yellow-800 disabled:opacity-50">
             Guardar
           </button>
-
         </div>
       </form>
-    </div>
-  </div>
+  </DragagableModal>
 </template>
